@@ -5,11 +5,6 @@ import time
 start_time = time.time()
 
 # CLASS
-
-class MultipleMeta(object):
-    pass
-
-
 class SegmentationMatrix:
     def __init__(self, x, y, z, mode):
         self.x = x
@@ -33,7 +28,7 @@ class SegmentationMatrix:
                     self.segmentationMatrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
 
     def displayMatrix(self):
-        print("Segmentation Size is ", self.x, "x", self.y, " with ", self.z, "image(s) and ", self.mode, " mode(s).")
+        print("Segmentation Size is", self.x, "x", self.y, "with", self.z, "image(s) and", self.mode, "mode(s).")
         for i in range(0, self.z):
             for j in range(0, self.x):
                 for k in range(0, self.y):
