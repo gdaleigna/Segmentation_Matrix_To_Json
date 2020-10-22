@@ -1,28 +1,60 @@
 import numpy as np
 import random
+import time
 
-x = 12
-y = 12
-z = 10
-mode = 1
+start_time = time.time()
 
-segmentationMatrix = np.zeros((z, x, y, mode))
+# CLASS
 
-for i in range(0, z):
-    for j in range(0, x):
-        for k in range(0, y):
-            segmentationMatrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
+class SegmentationMatrix:
+    def __init__(self, x, y, z, mode):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.mode = mode
+        self.segmentationMatrix = np.zeros((z, x, y, mode))
 
-# DISPLAY SEGMENTATION
-for i in range(0, z):
-    for j in range(0, x):
-        for k in range(0, y):
-            if segmentationMatrix[i][j][k][0] > 0:
-                print(int(segmentationMatrix[i][j][k][0]), end='')
-            else:
-                print(".", end='')
+    def copyMatrixFromNumpyArray(cls, numpyArray):
+        if numpyArray.ndim == 4:
+            x = np.shape(numpyArray)[1]
+            y = np.shape(numpyArray)[2]
+            z = np.shape(numpyArray)[0]
+            mode = np.shape(numpyArray)[3]
+            segmentationMatrix = numpyArray
+            return cls(segmentationMatrix)
 
-            print(" ", end='')
+    def generateRandomSegmentation(self):
+        for i in range(0, self.z):
+            for j in range(0, self.x):
+                for k in range(0, self.y):
+                    self.segmentationMatrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
 
-        print()
-    print()
+    def displayMatrix(self):
+        print("Segmentation Size is ", self.x, "x", self.y, " with ", self.z, "image(s) and ", self.mode, " mode(s).")
+        for i in range(0, self.z):
+            for j in range(0, self.x):
+                for k in range(0, self.y):
+                    if self.segmentationMatrix[i][j][k][0] > 0:
+                        print(int(self.segmentationMatrix[i][j][k][0]), end='')
+                    else:
+                        print(".", end='')
+
+                    print(" ", end='')
+
+                print()
+            print()
+
+
+# MAIN
+
+segmentationMatrix = np.zeros((3, 4, 4, 1))
+testSeg = SegmentationMatrix.copyMatrixFromNumpyArray(segmentationMatrix)
+testSeg.displayMatrix()
+
+# newSeg = SegmentationMatrix(12, 12, 5, 2)
+# newSeg.generateRandomSegmentation()
+# newSeg.displayMatrix()
+
+# TIMER
+print("--- %s seconds ---" % (time.time() - start_time))
+
