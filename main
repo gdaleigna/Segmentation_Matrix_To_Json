@@ -1,5 +1,28 @@
 import numpy as np
+import random
 
-segmentationMatrix = np.array((1, 2, 3, 4, 5))
+x = 12
+y = 12
+z = 10
+mode = 1
 
-print(segmentationMatrix)
+segmentationMatrix = np.zeros((z, x, y, mode))
+
+for i in range(0, z):
+    for j in range(0, x):
+        for k in range(0, y):
+            segmentationMatrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
+
+# DISPLAY SEGMENTATION
+for i in range(0, z):
+    for j in range(0, x):
+        for k in range(0, y):
+            if segmentationMatrix[i][j][k][0] > 0:
+                print(int(segmentationMatrix[i][j][k][0]), end='')
+            else:
+                print(".", end='')
+
+            print(" ", end='')
+
+        print()
+    print()
