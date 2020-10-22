@@ -7,6 +7,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1jEkh63pyzX69A6D0DS1KuP2l9L" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -16,7 +19,9 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -90,6 +95,7 @@
       <option name="presentableId" value="Default" />
       <updated>1603376754886</updated>
       <workItem from="1603376763492" duration="687000" />
+      <workItem from="1603378436543" duration="30000" />
     </task>
     <servers />
   </component>
@@ -105,22 +111,42 @@
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
     <state x="2132" y="683" key="#com.intellij.fileTypes.FileTypeChooser/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603376892638" />
-    <state width="1558" height="502" key="GridCell.Tab.0.bottom" timestamp="1603377451856">
+    <state width="1558" height="615" key="GridCell.Tab.0.bottom" timestamp="1603378481047">
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
-    <state width="1558" height="502" key="GridCell.Tab.0.bottom/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603377451856" />
-    <state width="1558" height="502" key="GridCell.Tab.0.center" timestamp="1603377451854">
+    <state width="1558" height="615" key="GridCell.Tab.0.bottom/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481047" />
+    <state width="1558" height="615" key="GridCell.Tab.0.center" timestamp="1603378481045">
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
-    <state width="1558" height="502" key="GridCell.Tab.0.center/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603377451854" />
-    <state width="1558" height="502" key="GridCell.Tab.0.left" timestamp="1603377451854">
+    <state width="1558" height="615" key="GridCell.Tab.0.center/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481045" />
+    <state width="1558" height="615" key="GridCell.Tab.0.left" timestamp="1603378481044">
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
-    <state width="1558" height="502" key="GridCell.Tab.0.left/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603377451854" />
-    <state width="1558" height="502" key="GridCell.Tab.0.right" timestamp="1603377451855">
+    <state width="1558" height="615" key="GridCell.Tab.0.left/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481044" />
+    <state width="1558" height="615" key="GridCell.Tab.0.right" timestamp="1603378481046">
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
-    <state width="1558" height="502" key="GridCell.Tab.0.right/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603377451855" />
+    <state width="1558" height="615" key="GridCell.Tab.0.right/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481046" />
+    <state width="1558" height="615" key="GridCell.Tab.1.bottom" timestamp="1603378481051">
+      <screen x="0" y="23" width="3200" height="1702" />
+    </state>
+    <state width="1558" height="615" key="GridCell.Tab.1.bottom/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481051" />
+    <state width="1558" height="615" key="GridCell.Tab.1.center" timestamp="1603378481049">
+      <screen x="0" y="23" width="3200" height="1702" />
+    </state>
+    <state width="1558" height="615" key="GridCell.Tab.1.center/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481049" />
+    <state width="1558" height="615" key="GridCell.Tab.1.left" timestamp="1603378481048">
+      <screen x="0" y="23" width="3200" height="1702" />
+    </state>
+    <state width="1558" height="615" key="GridCell.Tab.1.left/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481048" />
+    <state width="1558" height="615" key="GridCell.Tab.1.right" timestamp="1603378481050">
+      <screen x="0" y="23" width="3200" height="1702" />
+    </state>
+    <state width="1558" height="615" key="GridCell.Tab.1.right/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378481050" />
+    <state x="1901" y="512" key="SettingsEditor" timestamp="1603378464759">
+      <screen x="0" y="23" width="3200" height="1702" />
+    </state>
+    <state x="1901" y="512" key="SettingsEditor/0.23.3200.1702/3200.1098.1920.1177@0.23.3200.1702" timestamp="1603378464759" />
     <state x="2077" y="706" key="com.intellij.ide.util.TipDialog" timestamp="1603376796020">
       <screen x="0" y="23" width="3200" height="1702" />
     </state>
@@ -128,6 +154,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Segmentation_Matrix_to_Json$main.coverage" NAME="main Coverage Results" MODIFIED="1603377403590" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Segmentation_Matrix_To_Json$main.coverage" NAME="main Coverage Results" MODIFIED="1603378481012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Segmentation_Matrix_to_Json$Segmentation.coverage" NAME="Segmentation Coverage Results" MODIFIED="1603377343292" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
