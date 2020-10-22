@@ -6,7 +6,14 @@ start_time = time.time()
 
 # CLASS
 class SegmentationMatrix:
-    def __init__(self, x, y, z, mode):
+    def __init__(self):
+        self.x = 3
+        self.y = 3
+        self.z = 2
+        self.mode = 1
+        self.segmentationMatrix = np.zeros((self.z, self.x, self.y, self.mode))
+
+    def createNewMatrix(self, x, y, z, mode):
         self.x = x
         self.y = y
         self.z = z
@@ -44,15 +51,11 @@ class SegmentationMatrix:
 
 
 # MAIN
-
-segmentationMatrix = np.zeros((3, 4, 4, 1))
-testSeg = SegmentationMatrix(1, 1, 1, 1)
-testSeg.copyMatrixFromNumpyArray(segmentationMatrix)
-testSeg.displayMatrix()
-
-# newSeg = SegmentationMatrix(12, 12, 5, 2, None)
-# newSeg.generateRandomSegmentation()
-# newSeg.displayMatrix()
+seg = SegmentationMatrix()
+# seg.copyMatrixFromNumpyArray(segmentationMatrix)
+seg.createNewMatrix(12, 12, 5, 2)
+seg.generateRandomSegmentation()
+seg.displayMatrix()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
