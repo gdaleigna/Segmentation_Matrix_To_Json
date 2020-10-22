@@ -12,6 +12,7 @@ class SegmentationMatrix:
         self.z = 2
         self.mode = 1
         self.segmentationMatrix = np.zeros((self.z, self.x, self.y, self.mode))
+        self.numberOfObjects = None
 
     def createNewMatrix(self, x, y, z, mode):
         self.x = x
@@ -49,13 +50,20 @@ class SegmentationMatrix:
                 print()
             print()
 
+    def findIndepedentObjects(self):
+        tmpSeg = self.segmentationMatrix
+        for i in range(0, self.z):
+            section = tmpSeg[i]
+
+
 
 # MAIN
 seg = SegmentationMatrix()
 # seg.copyMatrixFromNumpyArray(segmentationMatrix)
-seg.createNewMatrix(12, 12, 5, 2)
+seg.createNewMatrix(10, 10, 3, 2)
 seg.generateRandomSegmentation()
 seg.displayMatrix()
+seg.findIndepedentObjects()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
