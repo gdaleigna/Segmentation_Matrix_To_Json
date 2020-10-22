@@ -6,6 +6,10 @@ start_time = time.time()
 
 # CLASS
 
+class MultipleMeta(object):
+    pass
+
+
 class SegmentationMatrix:
     def __init__(self, x, y, z, mode):
         self.x = x
@@ -14,14 +18,13 @@ class SegmentationMatrix:
         self.mode = mode
         self.segmentationMatrix = np.zeros((z, x, y, mode))
 
-    def copyMatrixFromNumpyArray(cls, numpyArray):
+    def copyMatrixFromNumpyArray(self, numpyArray):
         if numpyArray.ndim == 4:
-            x = np.shape(numpyArray)[1]
-            y = np.shape(numpyArray)[2]
-            z = np.shape(numpyArray)[0]
-            mode = np.shape(numpyArray)[3]
-            segmentationMatrix = numpyArray
-            return cls(segmentationMatrix)
+            self.x = np.shape(numpyArray)[1]
+            self.y = np.shape(numpyArray)[2]
+            self.z = np.shape(numpyArray)[0]
+            self.mode = np.shape(numpyArray)[3]
+            self.segmentationMatrix = numpyArray
 
     def generateRandomSegmentation(self):
         for i in range(0, self.z):
@@ -48,10 +51,11 @@ class SegmentationMatrix:
 # MAIN
 
 segmentationMatrix = np.zeros((3, 4, 4, 1))
-testSeg = SegmentationMatrix.copyMatrixFromNumpyArray(segmentationMatrix)
+testSeg = SegmentationMatrix(1, 1, 1, 1)
+testSeg.copyMatrixFromNumpyArray(segmentationMatrix)
 testSeg.displayMatrix()
 
-# newSeg = SegmentationMatrix(12, 12, 5, 2)
+# newSeg = SegmentationMatrix(12, 12, 5, 2, None)
 # newSeg.generateRandomSegmentation()
 # newSeg.displayMatrix()
 
