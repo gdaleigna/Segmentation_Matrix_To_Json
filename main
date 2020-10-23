@@ -72,17 +72,31 @@ class SegmentationMatrix:
                 print()
             print()
 
-    def find_independent_objects_from_immediate_adjacency(self):
-        tmp_seg = self.input_matrix
-        for i in range(0, self.size_z):
-            section = tmp_seg[i]
-
-    def find_independent_objects_from_diagonal_adjacency(self):
+    def find_independent_objects_from_adjacency(self):
         tmp_seg = self.input_matrix
 
-        neighbors2d = (-1, 0), (0, +1), (+1, 0), (0, -1)
+        # # This adjacency map excludes the diagonal vertices.
+        # adjacency = (0, -1, +1), \
+        #             (-1, -1, 0), \
+        #             (0, -1, 0), \
+        #             (+1, -1, 0), \
+        #             (0, -1, -1), \
+        #             (-1, 0, +1), \
+        #             (0, 0, +1), \
+        #             (+1, 0, +1), \
+        #             (-1, 0, 0), \
+        #             (+1, 0, 0), \
+        #             (-1, 0, -1), \
+        #             (0, 0, -1), \
+        #             (+1, 0, -1), \
+        #             (0, +1, +1), \
+        #             (-1, +1, 0), \
+        #             (0, +1, 0), \
+        #             (+1, +1, 0), \
+        #             (0, +1, -1)
 
-        neighbors = (-1, -1, +1), \
+        # This adjacency map includes the diagonal vertices.
+        adjacency = (-1, -1, +1), \
                     (0, -1, +1), \
                     (+1, -1, +1), \
                     (-1, -1, 0), \
