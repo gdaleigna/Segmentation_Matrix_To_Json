@@ -4,44 +4,65 @@ import time
 
 start_time = time.time()
 
+
 # CLASS
+class SegmentationCoordinate:
+    x: int
+    y: int
+    z: int
+
+    def __init__(self, x=None, y=None, z=None):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def print(self):
+        print("X: ", self.x, ", Y: ", self.y, ", Z: ", self.z, sep="")
+
+
 class SegmentationMatrix:
+    x: int
+    y: int
+    z: int
+    mode: int
+    numberOfObjects: int
+
     def __init__(self):
         self.x = 3
         self.y = 3
         self.z = 2
         self.mode = 1
         self.segmentationMatrix = np.zeros((self.z, self.x, self.y, self.mode))
-        self.numberOfObjects = None
+        self.numberOfObjects = -1
 
-    def createNewMatrix(self, x, y, z, mode):
+    def create_new_matrix(self, x, y, z, mode):
         self.x = x
         self.y = y
         self.z = z
         self.mode = mode
         self.segmentationMatrix = np.zeros((z, x, y, mode))
 
-    def copyMatrixFromNumpyArray(self, numpyArray):
-        if numpyArray.ndim == 4:
-            self.x = np.shape(numpyArray)[1]
-            self.y = np.shape(numpyArray)[2]
-            self.z = np.shape(numpyArray)[0]
-            self.mode = np.shape(numpyArray)[3]
-            self.segmentationMatrix = numpyArray
+    def copy_matrix_from_numpy_array(self, numpy_array):
+        if numpy_array.ndim == 4:
+            self.x = np.shape(numpy_array)[1]
+            self.y = np.shape(numpy_array)[2]
+            self.z = np.shape(numpy_array)[0]
+            self.mode = np.shape(numpy_array)[3]
+            self.segmentationMatrix = numpy_array
 
-    def generateRandomSegmentation(self):
+    def generate_random_segmentation(self):
         for i in range(0, self.z):
             for j in range(0, self.x):
                 for k in range(0, self.y):
                     self.segmentationMatrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
 
-    def displayMatrix(self):
+    def display_matrix_with_selected_mode(self, mode):
         print("Segmentation Size is", self.x, "x", self.y, "with", self.z, "image(s) and", self.mode, "mode(s).")
         for i in range(0, self.z):
             for j in range(0, self.x):
                 for k in range(0, self.y):
-                    if self.segmentationMatrix[i][j][k][0] > 0:
-                        print(int(self.segmentationMatrix[i][j][k][0]), end='')
+                    if self.segmentationMatrix[i][j][k][mode] > 0:
+                        print(int(self.segmentationMatrix[i][j][k][mode]), end='')
                     else:
                         print(".", end='')
 
@@ -50,21 +71,36 @@ class SegmentationMatrix:
                 print()
             print()
 
-    def findIndepedentObjects(self):
-        tmpSeg = self.segmentationMatrix
+    def find_independent_objects_from_immediate_adjacency(self):
+        tmp_seg = self.segmentationMatrix
         for i in range(0, self.z):
-            section = tmpSeg[i]
+            section = tmp_seg[i]
 
+    def find_independent_objects_from_diagonal_adjacency(self):
+        tmp_seg = self.segmentationMatrix
+        for i in range(0, self.z):
+            section = tmp_seg[i]
+
+    def print_all_positive_coordinates(self):
+        all_coordinates = []
+
+        for i in range(0, self.z):
+            for j in range(0, self.x):
+                for k in range(0, self.y):
+                    if self.segmentationMatrix[i][j][k][0] > 0:
+                        all_coordinates.append(SegmentationCoordinate(k, j, i))
+
+        for i in all_coordinates:
+            i.print()
 
 
 # MAIN
 seg = SegmentationMatrix()
-# seg.copyMatrixFromNumpyArray(segmentationMatrix)
-seg.createNewMatrix(10, 10, 3, 2)
-seg.generateRandomSegmentation()
-seg.displayMatrix()
-seg.findIndepedentObjects()
+# seg.copy_matrix_from_numpy_array(segmentation_matrix)
+seg.create_new_matrix(10, 10, 3, 1)
+seg.generate_random_segmentation()
+seg.display_matrix_with_selected_mode(0)
+seg.print_all_positive_coordinates()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
-
