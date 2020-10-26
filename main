@@ -43,6 +43,8 @@ class SegmentationMatrix:
             self.size_z = np.shape(numpy_array)[0]
             self.mode = np.shape(numpy_array)[3]
             self.input_matrix = numpy_array
+        else:
+            print("ERROR: Incompatible Matrix")
 
     def create_new_matrix(self, x, y, z, mode):
         self.size_x = x
@@ -58,7 +60,8 @@ class SegmentationMatrix:
                     self.input_matrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
 
     def display_input_matrix_with_selected_mode(self, mode):
-        print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and", self.mode, "mode(s).")
+        print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and", self.mode,
+              "mode(s).")
         for i in range(0, self.size_z):
             for j in range(0, self.size_x):
                 for k in range(0, self.size_y):
@@ -128,7 +131,7 @@ class SegmentationMatrix:
         for i in range(0, self.size_z):
             for j in range(0, self.size_x):
                 for k in range(0, self.size_y):
-                    if self.input_matrix[i][j][k][0] > 0:
+                    if self.input_matrix[i][j][k][0] != 0:
                         all_coordinates.append(SegmentationCoordinate(k, j, i))
 
     def print_all_coordinates(self):
