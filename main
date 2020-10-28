@@ -1,71 +1,11 @@
 import numpy as np
 import random
 import time
-from collections import deque
-from operator import eq
 
 start_time = time.time()
 
 
-# CLASS
-class SegmentationCoordinate:
-    x: int
-    y: int
-    z: int
-
-    def __init__(self, x=None, y=None, z=None):
-        self.x = x
-        self.y = y
-        self.z = z
-
-    def get_coordinates(self):
-        return self.x, self.y, self.z
-
-    def print(self):
-        print("X: ", self.x, ", Y: ", self.y, ", Z: ", self.z, sep="")
-
-
-class SegmentationObject:
-    segmentation_object = []
-
-    def __init__(self):
-        self.segmentation_object = []
-
-    def add(self, x, y, z):
-        self.segmentation_object.append(SegmentationCoordinate(x, y, z))
-
-    def __contains__(self, coordinate):
-        for i in self.segmentation_object:
-            if coordinate.get_coordinates() == i.get_coordinates():
-                return True
-
-        return False
-
-    def is_empty(self):
-        return self.segmentation_object == []
-
-    def find_node(self, coordinate):
-        for i in self.segmentation_object:
-            if coordinate.get_coordinates() == i.get_coordinates():
-                return i
-
-        return None
-
-    def find(self, coordinate):
-        for i in self.segmentation_object:
-            if coordinate.get_coordinates() == i.get_coordinates():
-                return True
-
-        return False
-
-    def delete(self, coordinate):
-        index = 0
-        for node in self.segmentation_object:
-            if coordinate.get_coordinates() == node.get_coordinates():
-                self.segmentation_object.pop(index)
-
-            index += 1
-
+# ADJACENCY DEFINITIONS
 def direct_adjacency():
     adjacency = (0, -1, +1), \
                 (-1, -1, 0), \
@@ -126,6 +66,69 @@ def get_adjacency_for_selection(selection):
     return adjacency[selection]()
 
 
+# CLASS
+class SegmentationCoordinate:
+    x: int
+    y: int
+    z: int
+
+    def __init__(self, x=None, y=None, z=None):
+        self.x = x
+        self.y = y
+        self.z = z
+
+    def get_coordinates(self):
+        return self.x, self.y, self.z
+
+    def print(self):
+        print("X: ", self.x, ", Y: ", self.y, ", Z: ", self.z, sep="")
+
+
+class SegmentationObject:
+    segmentation_object = []
+
+    def __init__(self):
+        self.segmentation_object = []
+
+    def __contains__(self, coordinate):
+        for node in self.segmentation_object:
+            if coordinate.get_coordinates() == node.get_coordinates():
+                return True
+
+        return False
+
+    def add(self, x, y, z):
+        self.segmentation_object.append(SegmentationCoordinate(x, y, z))
+
+    def is_empty(self):
+        return self.segmentation_object == []
+
+    def find_node(self, coordinate):
+        for node in self.segmentation_object:
+            if coordinate.get_coordinates() == node.get_coordinates():
+                return node
+
+        return None
+
+    def find(self, coordinate):
+        for i in self.segmentation_object:
+            if coordinate.get_coordinates() == i.get_coordinates():
+                return True
+
+        return False
+
+    def delete(self, coordinate):
+        index = 0
+        for node in self.segmentation_object:
+            if coordinate.get_coordinates() == node.get_coordinates():
+                self.segmentation_object.pop(index)
+
+            index += 1
+
+    def size(self):
+        return len(self.segmentation_object)
+
+
 class SegmentationMatrix:
     size_x: int
     size_y: int
@@ -137,42 +140,38 @@ class SegmentationMatrix:
         self.size_x = 3
         self.size_y = 3
         self.size_z = 2
-        self.mode = 1
         self.numberOfObjects = -1
-        self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x, self.mode))
-        self.segmentation_objects = [[]]
+        self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
+        self.segmentation_objects = []
 
     def copy_matrix_from_numpy_array(self, numpy_array):
-        if numpy_array.ndim == 4:
+        if numpy_array.ndim == 3:
             self.size_x = np.shape(numpy_array)[1]
             self.size_y = np.shape(numpy_array)[2]
             self.size_z = np.shape(numpy_array)[0]
-            self.mode = np.shape(numpy_array)[3]
             self.input_matrix = numpy_array
         else:
             print("ERROR: Incompatible Matrix")
 
-    def create_new_matrix(self, x, y, z, mode):
+    def create_new_matrix(self, x, y, z):
         self.size_x = x
         self.size_y = y
         self.size_z = z
-        self.mode = mode
-        self.input_matrix = np.zeros((z, y, x, mode))
+        self.input_matrix = np.zeros((z, y, x), dtype=bool)
 
     def generate_random_segmentation(self):
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    self.input_matrix[i][j][k][0] = 1 if random.randint(0, 3) == 1 else 0
+                    self.input_matrix[i][j][k] = True if random.randint(0, 3) == 1 else 0
 
-    def display_input_matrix_with_selected_mode(self, mode):
-        print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and", self.mode,
-              "mode(s).")
+    def print_input_matrix(self):
+        print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    if self.input_matrix[i][j][k][mode] > 0:
-                        print(int(self.input_matrix[i][j][k][mode]), end='')
+                    if self.input_matrix[i][j][k]:
+                        print("1", end='')
                     else:
                         print(".", end='')
 
@@ -187,10 +186,14 @@ class SegmentationMatrix:
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    if self.input_matrix[i][j][k][0] > 0:
+                    if self.input_matrix[i][j][k] > 0:
                         all_coordinates.add(k, j, i)
 
         return all_coordinates
+
+    def print_size_input_objects(self):
+        all_coordinates = self.get_all_input_coordinates()
+        print("Number of 1s:", all_coordinates.size())
 
     def print_all_coordinates(self):
         all_coordinates = self.get_all_input_coordinates()
@@ -207,22 +210,26 @@ class SegmentationMatrix:
 
         return True
 
+    def create_coordinate_for_lookup(self, coordinate):
+        node2 = SegmentationCoordinate(0, 0, 0)
+        return node2
+
     def find_proximity(self, adjacency):
         seg_tmp = self.input_matrix
-        all_mri_objects = []
-        mri_object = []
+        # all_mri_objects = []
+        # mri_object = []
         all_coordinates = self.get_all_input_coordinates()
 
         while not all_coordinates.is_empty():
             node = all_coordinates.segmentation_object[0]
-            node.print()
+            node2 = self.create_coordinate_for_lookup(node)
             all_coordinates.delete(node)
 
         # while not self.is_input_matrix_empty(seg_tmp):
-        #     # x, y, z = all_coordinates[0].get_coordinates()
-        #     all_coordinates[0].print()
-        #     all_coordinates.pop(0)
-        #     seg_tmp[z][y][x][0] = 0
+        #     node = all_coordinates.segmentation_object[0]
+        #     x, y, z = node.get_coordinates()
+        #     all_coordinates.delete(node)
+        #     seg_tmp[z][y][x] = 0
 
     def find_independent_objects_from_adjacency(self):
         self.find_proximity(get_adjacency_for_selection(1))
@@ -231,9 +238,13 @@ class SegmentationMatrix:
 # MAIN
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
-seg.create_new_matrix(12, 8, 3, 1)
+
+seg.create_new_matrix(12, 8, 3)
+# seg.create_new_matrix(64, 64, 10)
 seg.generate_random_segmentation()
-seg.display_input_matrix_with_selected_mode(0)
+seg.print_size_input_objects()
+seg.print_input_matrix()
+
 # seg.print_all_coordinates()
 seg.find_independent_objects_from_adjacency()
 
