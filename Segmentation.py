@@ -1,4 +1,5 @@
 import numpy as np
+from collections import deque
 import random
 import time
 
@@ -7,24 +8,12 @@ start_time = time.time()
 
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
-    adjacency = (0, -1, +1), \
-                (-1, -1, 0), \
+    adjacency = (-1, 0, 0), \
                 (0, -1, 0), \
-                (+1, -1, 0), \
-                (0, -1, -1), \
-                (-1, 0, +1), \
-                (0, 0, +1), \
-                (+1, 0, +1), \
-                (-1, 0, 0), \
-                (+1, 0, 0), \
-                (-1, 0, -1), \
                 (0, 0, -1), \
-                (+1, 0, -1), \
-                (0, +1, +1), \
-                (-1, +1, 0), \
+                (+1, 0, 0), \
                 (0, +1, 0), \
-                (+1, +1, 0), \
-                (0, +1, -1)
+                (0, 0, +1)
 
     return adjacency
 
@@ -62,7 +51,8 @@ def diagonal_adjacency():
 
 def get_adjacency_for_selection(selection):
     adjacency = {0: direct_adjacency,
-                 1: diagonal_adjacency}
+                 1: diagonal_adjacency
+                 }
     return adjacency[selection]()
 
 
@@ -109,21 +99,6 @@ class SegmentationObject:
                 return node
 
         return None
-
-    def find(self, coordinate):
-        for i in self.segmentation_object:
-            if coordinate.get_coordinates() == i.get_coordinates():
-                return True
-
-        return False
-
-    def delete(self, coordinate):
-        index = 0
-        for node in self.segmentation_object:
-            if coordinate.get_coordinates() == node.get_coordinates():
-                self.segmentation_object.pop(index)
-
-            index += 1
 
     def size(self):
         return len(self.segmentation_object)
@@ -189,11 +164,11 @@ class SegmentationMatrix:
                     if self.input_matrix[i][j][k] > 0:
                         all_coordinates.add(k, j, i)
 
+        self.numberOfObjects = all_coordinates.size()
         return all_coordinates
 
     def print_size_input_objects(self):
-        all_coordinates = self.get_all_input_coordinates()
-        print("Number of 1s:", all_coordinates.size())
+        print("Number of 1s:", self.numberOfObjects)
 
     def print_all_coordinates(self):
         all_coordinates = self.get_all_input_coordinates()
@@ -210,26 +185,20 @@ class SegmentationMatrix:
 
         return True
 
-    def create_coordinate_for_lookup(self, coordinate):
+    def create_coordinate_for_lookup(self, coordinate, offset):
         node2 = SegmentationCoordinate(0, 0, 0)
         return node2
 
     def find_proximity(self, adjacency):
         seg_tmp = self.input_matrix
-        # all_mri_objects = []
-        # mri_object = []
+        all_mri_objects = []
+        mri_object = []
         all_coordinates = self.get_all_input_coordinates()
 
         while not all_coordinates.is_empty():
             node = all_coordinates.segmentation_object[0]
-            node2 = self.create_coordinate_for_lookup(node)
-            all_coordinates.delete(node)
-
-        # while not self.is_input_matrix_empty(seg_tmp):
-        #     node = all_coordinates.segmentation_object[0]
-        #     x, y, z = node.get_coordinates()
-        #     all_coordinates.delete(node)
-        #     seg_tmp[z][y][x] = 0
+            node2 = self.create_coordinate_for_lookup(node, 1)
+            all_coordinates
 
     def find_independent_objects_from_adjacency(self):
         self.find_proximity(get_adjacency_for_selection(1))
@@ -240,12 +209,11 @@ seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 seg.create_new_matrix(12, 8, 3)
-# seg.create_new_matrix(64, 64, 10)
+# seg.create_new_matrix(32, 16, 5)
 seg.generate_random_segmentation()
-seg.print_size_input_objects()
 seg.print_input_matrix()
 
-# seg.print_all_coordinates()
+seg.print_all_coordinates()
 seg.find_independent_objects_from_adjacency()
 
 # TIMER
