@@ -157,39 +157,29 @@ class SegmentationMatrix:
         for i in all_coordinates:
             i.print()
 
-    def get_item(self, array, index):
-        z, x, y = index.get_coordinates()
-        return array[z][x][y]
+    def is_input_matrix_empty(self, seg_tmp):
+        for i in range(0, self.size_z):
+            for j in range(0, self.size_y):
+                for k in range(0, self.size_x):
+                    if self.input_matrix[i][j][k][0] > 0:
+                        return False
 
-    def get_next(self, node, offset):
-        z, x, y = node
-        z_offset, x_offset, y_offset = offset
-        return z + z_offset, x + x_offset, y + y_offset
+        return True
 
-    def is_valid(self, array, index):
-        z, x, y = index
-        return 0 <= z < array.shape[0] and 0 <= x < array.shape[1] and 0 <= y < array.shape[2]
+    def find_proximity(self, adjacency):
+        seg_tmp = self.input_matrix
+        all_mri_objects = []
+        mri_object = []
+        all_coordinates = self.get_all_input_coordinates()
+        while not self.is_input_matrix_empty(seg_tmp):
+            x, y, z = all_coordinates[0].get_coordinates()
+            all_coordinates[0].print()
+            all_coordinates.pop(0)
+            seg_tmp[z][y][x][0] = 0
 
-    def find_proximity(self, coordinates, adjacency, mode):
-        similar = eq
-        match = start
-        block = {start}
-        visit = deque(block)
-        child = dict(BFS=deque.popleft, DFS=deque.pop)[mode]
-        while visit:
-            node = child(visit)
-            for offset in adjacency:
-                index = self.get_next(node, offset)
-                if index not in block:
-                    block.add(index)
-                    if self.is_valid(coordinates, index):
-                        value = self.get_item(coordinates, index)
-                        if similar(value, match):
-                            visit.append(index)
-            yield node
 
     def find_independent_objects_from_adjacency(self):
-        print(list(self.find_proximity(self.get_all_input_coordinates(), get_adjacency_for_selection(1), 'BFS')))
+        self.find_proximity(get_adjacency_for_selection(1))
 
 
 # MAIN
