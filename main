@@ -25,6 +25,47 @@ class SegmentationCoordinate:
         print("X: ", self.x, ", Y: ", self.y, ", Z: ", self.z, sep="")
 
 
+class SegmentationObject:
+    segmentation_object = []
+
+    def __init__(self):
+        self.segmentation_object = []
+
+    def add(self, x, y, z):
+        self.segmentation_object.append(SegmentationCoordinate(x, y, z))
+
+    def __contains__(self, coordinate):
+        for i in self.segmentation_object:
+            if coordinate.get_coordinates() == i.get_coordinates():
+                return True
+
+        return False
+
+    def is_empty(self):
+        return self.segmentation_object == []
+
+    def find_node(self, coordinate):
+        for i in self.segmentation_object:
+            if coordinate.get_coordinates() == i.get_coordinates():
+                return i
+
+        return None
+
+    def find(self, coordinate):
+        for i in self.segmentation_object:
+            if coordinate.get_coordinates() == i.get_coordinates():
+                return True
+
+        return False
+
+    def delete(self, coordinate):
+        index = 0
+        for node in self.segmentation_object:
+            if coordinate.get_coordinates() == node.get_coordinates():
+                self.segmentation_object.pop(index)
+
+            index += 1
+
 def direct_adjacency():
     adjacency = (0, -1, +1), \
                 (-1, -1, 0), \
@@ -141,13 +182,13 @@ class SegmentationMatrix:
             print()
 
     def get_all_input_coordinates(self):
-        all_coordinates = []
+        all_coordinates = SegmentationObject()
 
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
                     if self.input_matrix[i][j][k][0] > 0:
-                        all_coordinates.append(SegmentationCoordinate(k, j, i))
+                        all_coordinates.add(k, j, i)
 
         return all_coordinates
 
@@ -171,12 +212,17 @@ class SegmentationMatrix:
         all_mri_objects = []
         mri_object = []
         all_coordinates = self.get_all_input_coordinates()
-        while not self.is_input_matrix_empty(seg_tmp):
-            x, y, z = all_coordinates[0].get_coordinates()
-            all_coordinates[0].print()
-            all_coordinates.pop(0)
-            seg_tmp[z][y][x][0] = 0
 
+        while not all_coordinates.is_empty():
+            node = all_coordinates.segmentation_object[0]
+            node.print()
+            all_coordinates.delete(node)
+
+        # while not self.is_input_matrix_empty(seg_tmp):
+        #     # x, y, z = all_coordinates[0].get_coordinates()
+        #     all_coordinates[0].print()
+        #     all_coordinates.pop(0)
+        #     seg_tmp[z][y][x][0] = 0
 
     def find_independent_objects_from_adjacency(self):
         self.find_proximity(get_adjacency_for_selection(1))
