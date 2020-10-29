@@ -3,8 +3,6 @@ from collections import deque
 import random
 import time
 
-start_time = time.time()
-
 
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
@@ -78,12 +76,12 @@ class SegmentationObject:
     def __init__(self):
         self.segmentation_object = []
 
-    def __contains__(self, coordinate):
-        for node in self.segmentation_object:
-            if coordinate.get_coordinates() == node.get_coordinates():
-                return True
-
-        return False
+    # def __contains__(self, coordinate):
+    #     for node in self.segmentation_object:
+    #         if coordinate.get_coordinates() == node.get_coordinates():
+    #             return True
+    #
+    #     return False
 
     def add(self, x, y, z):
         self.segmentation_object.append(SegmentationCoordinate(x, y, z))
@@ -91,7 +89,7 @@ class SegmentationObject:
     def is_empty(self):
         return self.segmentation_object == []
 
-    def find_node(self, coordinate):
+    def find(self, coordinate):
         for node in self.segmentation_object:
             if coordinate.get_coordinates() == node.get_coordinates():
                 return node
@@ -111,13 +109,13 @@ class SegmentationMatrix:
     size_y: int
     size_z: int
     mode: int
-    numberOfObjects: int
+    total_of_pixels: int
 
     def __init__(self):
         self.size_x = 3
         self.size_y = 3
         self.size_z = 2
-        self.numberOfObjects = -1
+        self.total_of_pixels = -1
         self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
         self.segmentation_objects = []
 
@@ -158,62 +156,51 @@ class SegmentationMatrix:
             print()
 
     def get_all_input_coordinates(self):
-        all_coordinates = SegmentationObject()
+        all_coordinates = deque()
 
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
                     if self.input_matrix[i][j][k] > 0:
-                        all_coordinates.add(k, j, i)
+                        all_coordinates.append(SegmentationCoordinate(k, j, i))
 
-        self.numberOfObjects = all_coordinates.size()
+        self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
     def print_size_input_objects(self):
-        print("Number of 1s:", self.numberOfObjects)
-
-    def print_all_coordinates(self):
-        all_coordinates = self.get_all_input_coordinates()
-        all_coordinates.print()
-
-    def is_input_matrix_empty(self, seg_tmp):
-        for i in range(0, self.size_z):
-            for j in range(0, self.size_y):
-                for k in range(0, self.size_x):
-                    if self.input_matrix[i][j][k][0] > 0:
-                        return False
-
-        return True
+        print("Number of 1s:", self.total_of_pixels)
 
     def create_coordinate_for_lookup(self, coordinate, offset):
         node2 = SegmentationCoordinate(0, 0, 0)
         return node2
 
     def find_proximity(self, adjacency):
-        seg_tmp = self.input_matrix
+        # seg_tmp = self.input_matrix # TODO: Check if a local copy is faster than self.input_matrix
+
         all_mri_objects = []
         mri_object = []
         all_coordinates = self.get_all_input_coordinates()
 
-        while not all_coordinates.is_empty():
-            node = all_coordinates.segmentation_object[0]
-            node2 = self.create_coordinate_for_lookup(node, 1)
-            all_coordinates
+        print("Number of 1s:", self.total_of_pixels)
+
+        while len(all_coordinates) > 0:
+            all_coordinates.pop()
 
     def find_independent_objects_from_adjacency(self):
         self.find_proximity(get_adjacency_for_selection(1))
 
 
 # MAIN
+start_time = time.time()
+
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(12, 8, 3)
+seg.create_new_matrix(256, 256, 50)
 # seg.create_new_matrix(32, 16, 5)
 seg.generate_random_segmentation()
-seg.print_input_matrix()
+# seg.print_input_matrix()
 
-seg.print_all_coordinates()
 seg.find_independent_objects_from_adjacency()
 
 # TIMER
