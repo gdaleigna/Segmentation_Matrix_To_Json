@@ -63,9 +63,7 @@ class SegmentationCoordinate:
     z: int
 
     def __init__(self, x=None, y=None, z=None):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x, self.y, self.z = x, y, z
 
     def get_coordinates(self):
         return self.x, self.y, self.z
@@ -102,6 +100,10 @@ class SegmentationObject:
 
     def size(self):
         return len(self.segmentation_object)
+
+    def print(self):
+        for node in self.segmentation_object:
+            node.print()
 
 
 class SegmentationMatrix:
@@ -172,9 +174,7 @@ class SegmentationMatrix:
 
     def print_all_coordinates(self):
         all_coordinates = self.get_all_input_coordinates()
-
-        for i in all_coordinates:
-            i.print()
+        all_coordinates.print()
 
     def is_input_matrix_empty(self, seg_tmp):
         for i in range(0, self.size_z):
