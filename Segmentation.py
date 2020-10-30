@@ -117,6 +117,7 @@ class SegmentationMatrix:
         self.size_z = 2
         self.total_of_pixels = -1
         self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
+        self.matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
         self.segmentation_objects = []
 
     def copy_matrix_from_numpy_array(self, numpy_array):
@@ -179,14 +180,15 @@ class SegmentationMatrix:
             lookup_y = y + neighbor[1]
             lookup_z = z + neighbor[2]
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
-                if self.input_matrix[lookup_z][lookup_y][lookup_x]:
+                if self.matrix[lookup_z][lookup_y][lookup_x]:
                     neighbors.append(SegmentationCoordinate(lookup_x, lookup_y, lookup_z))
-                    print("New match")
+                    self.matrix[lookup_z][lookup_y][lookup_x] = None
+                    print(node.get_coordinates(), "found at match at (", lookup_x, lookup_y, lookup_z, ")")
 
         return neighbors
 
     def find_proximity(self, adjacency):
-        # seg_tmp = self.input_matrix # TODO: Check if a local copy is faster than self.input_matrix
+        self.matrix = self.input_matrix # TODO: Check if a local copy is faster than self.input_matrix
 
         all_coordinates = self.get_all_input_coordinates()
         all_mri_objects = []
@@ -196,12 +198,12 @@ class SegmentationMatrix:
 
         while len(all_coordinates) > 0:
             node = all_coordinates.popleft()
-            print("New object", node.get_coordinates())
+            print("New object", len(all_mri_objects) + 1, "at", node.get_coordinates())
             mri_object.append(node)
             lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(node, adjacency)
             for neighbor in lookup_coordinates:
-                if self.input_matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
-                    print(len(all_mri_objects) + 1, ":", neighbor.get_coordinates(), "is a match for", node.get_coordinates(), "with", self.input_matrix[neighbor.z][neighbor.y][neighbor.x])
+                if self.matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
+                    print(neighbor.get_coordinates(), "is a match for", node.get_coordinates(), "with", self.matrix[neighbor.z][neighbor.y][neighbor.x])
                     # all_coordinates.remove(neighbor) # TODO: Create a find function for all_coordinates deque
                     mri_object.append(SegmentationCoordinate(neighbor.x, neighbor.y, neighbor.z))
 
@@ -222,7 +224,8 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(128, 128, 64)
+seg.create_new_matrix(128, 64, 32)
+seg.create_new_matrix(256, 256, 100)
 # seg.create_new_matrix(16, 8, 3)
 seg.generate_random_segmentation()
 # seg.print_input_matrix()
