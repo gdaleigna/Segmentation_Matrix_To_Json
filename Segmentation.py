@@ -66,6 +66,9 @@ class SegmentationCoordinate:
     def get_coordinates(self):
         return self.x, self.y, self.z
 
+    def is_equal(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
     def print(self):
         print("X: ", self.x, ", Y: ", self.y, ", Z: ", self.z, sep="")
 
@@ -183,7 +186,7 @@ class SegmentationMatrix:
                 if self.matrix[lookup_z][lookup_y][lookup_x]:
                     neighbors.append(SegmentationCoordinate(lookup_x, lookup_y, lookup_z))
                     self.matrix[lookup_z][lookup_y][lookup_x] = False
-                    print(node.get_coordinates(), "found at match at (", lookup_x, lookup_y, lookup_z, ")")
+                    # print(node.get_coordinates(), "found at match at (", lookup_x, lookup_y, lookup_z, ")")
 
         return neighbors
 
@@ -194,17 +197,23 @@ class SegmentationMatrix:
         all_mri_objects = []
         mri_object = []
 
-        print("Number of 1s:", self.total_of_pixels)
+        self.print_size_input_objects()
 
         while len(all_coordinates) > 0:
             node = all_coordinates.popleft()
-            print("New object", len(all_mri_objects) + 1, "at", node.get_coordinates())
+            print(len(all_mri_objects) + 1, ":", node.get_coordinates(), ": ", end='')
             mri_object.append(node)
             lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(node, adjacency)
             for neighbor in lookup_coordinates:
-                if self.matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
-                    print(neighbor.get_coordinates(), "is a match for", node.get_coordinates(), "with", self.matrix[neighbor.z][neighbor.y][neighbor.x])
-                    # all_coordinates.remove(neighbor) # TODO: Create a find function for all_coordinates deque
+                # if self.matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
+                    print(neighbor.get_coordinates(), ", ", end='', sep='')
+                    # all_coordinates.remove(neighbor.get_coordinates()) # TODO: Create a find function for all_coordinates deque
+                    for i in all_coordinates:
+                        print("i.get_coordinates() :", i.get_coordinates())
+                        if i.is_equal(neighbor):
+                            # all_coordinates.remove(i)
+                            print("Delete I")
+
                     mri_object.append(SegmentationCoordinate(neighbor.x, neighbor.y, neighbor.z))
 
 
@@ -213,6 +222,9 @@ class SegmentationMatrix:
                 #     mri_object.append(neighbor)
 
             all_mri_objects.append(mri_object)
+            print()
+
+        print("Done")
 
     def find_independent_objects_from_adjacency(self):
         self.find_proximity(get_adjacency_for_selection(1))
@@ -224,11 +236,11 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(128, 64, 32)
-# seg.create_new_matrix(256, 256, 100)
-# seg.create_new_matrix(16, 8, 3)
+# seg.create_new_matrix(64, 32, 16)
+seg.create_new_matrix(12, 8, 3)
+
 seg.generate_random_segmentation()
-# seg.print_input_matrix()
+seg.print_input_matrix()
 
 seg.find_independent_objects_from_adjacency()
 
