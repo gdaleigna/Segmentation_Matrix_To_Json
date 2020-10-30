@@ -182,13 +182,13 @@ class SegmentationMatrix:
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
                 if self.matrix[lookup_z][lookup_y][lookup_x]:
                     neighbors.append(SegmentationCoordinate(lookup_x, lookup_y, lookup_z))
-                    self.matrix[lookup_z][lookup_y][lookup_x] = None
+                    self.matrix[lookup_z][lookup_y][lookup_x] = False
                     print(node.get_coordinates(), "found at match at (", lookup_x, lookup_y, lookup_z, ")")
 
         return neighbors
 
     def find_proximity(self, adjacency):
-        self.matrix = self.input_matrix # TODO: Check if a local copy is faster than self.input_matrix
+        self.matrix = self.input_matrix # TODO: Check if a local copy is faster than self.matrix
 
         all_coordinates = self.get_all_input_coordinates()
         all_mri_objects = []
@@ -225,7 +225,7 @@ seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 seg.create_new_matrix(128, 64, 32)
-seg.create_new_matrix(256, 256, 100)
+# seg.create_new_matrix(256, 256, 100)
 # seg.create_new_matrix(16, 8, 3)
 seg.generate_random_segmentation()
 # seg.print_input_matrix()
