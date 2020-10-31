@@ -120,7 +120,6 @@ class SegmentationMatrix:
         self.size_z = 2
         self.total_of_pixels = -1
         self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
-        self.matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
         self.segmentation_objects = []
 
     def copy_matrix_from_numpy_array(self, numpy_array):
@@ -171,7 +170,7 @@ class SegmentationMatrix:
         self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
-    def create_lookup_coordinates_according_to_adjacency(self, node, adjacency):
+    def create_lookup_coordinates_according_to_adjacency(self, matrix, node, adjacency):
         neighbors = []
 
         for neighbor in adjacency:
@@ -179,15 +178,14 @@ class SegmentationMatrix:
             lookup_y = node[1] + neighbor[1]
             lookup_z = node[2] + neighbor[2]
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
-                if self.matrix[lookup_z][lookup_y][lookup_x]:
+                if matrix[lookup_z][lookup_y][lookup_x]:
                     neighbors.append([lookup_x, lookup_y, lookup_z])
-                    self.matrix[lookup_z][lookup_y][lookup_x] = False
+                    matrix[lookup_z][lookup_y][lookup_x] = False
 
         return neighbors
 
     def find_proximity(self, adjacency):
-        self.matrix = self.input_matrix  # TODO: Check if a local copy is faster than self.matrix
-
+        lookup_matrix = self.input_matrix
         all_coordinates = self.get_all_input_coordinates()
         all_mri_objects = []
         mri_object = []
@@ -198,7 +196,7 @@ class SegmentationMatrix:
             node = all_coordinates.popleft()
             print(len(all_mri_objects) + 1, ":", node, ": ", end='')
             mri_object.append(node)  # TODO: Replace with SegmentationObject object
-            lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(node, adjacency)
+            lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
             for neighbor in lookup_coordinates:
                 print(neighbor, ", ", end='', sep='')
                 all_coordinates.remove(neighbor)
