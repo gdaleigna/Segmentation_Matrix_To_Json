@@ -186,7 +186,7 @@ class SegmentationMatrix:
         return neighbors
 
     def find_proximity(self, adjacency):
-        self.matrix = self.input_matrix # TODO: Check if a local copy is faster than self.matrix
+        self.matrix = self.input_matrix  # TODO: Check if a local copy is faster than self.matrix
 
         all_coordinates = self.get_all_input_coordinates()
         all_mri_objects = []
@@ -197,24 +197,13 @@ class SegmentationMatrix:
         while len(all_coordinates) > 0:
             node = all_coordinates.popleft()
             print(len(all_mri_objects) + 1, ":", node, ": ", end='')
-            mri_object.append(node)
+            mri_object.append(node)  # TODO: Replace with SegmentationObject object
             lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(node, adjacency)
-            all_coordinates_copy = list(all_coordinates)
             for neighbor in lookup_coordinates:
-                # if self.matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
-                    print(neighbor, ", ", end='', sep='')
-                    # all_coordinates.remove(neighbor.get_coordinates()) # TODO: Create a find function for all_coordinates deque
-                    for e in all_coordinates_copy:
-                        if e == neighbor:
-                            all_coordinates.remove(e)
-                            print("Delete ", end='')
+                print(neighbor, ", ", end='', sep='')
+                all_coordinates.remove(neighbor)
 
-                    mri_object.append(SegmentationCoordinate(neighbor[0], neighbor[1], neighbor[2]))
-
-
-                # if all_coordinates.__contains__(neighbor):
-                #     all_coordinates.remove(neighbor)
-                #     mri_object.append(neighbor)
+                mri_object.append(SegmentationCoordinate(neighbor[0], neighbor[1], neighbor[2]))
 
             all_mri_objects.append(mri_object)
             print()
@@ -231,8 +220,8 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-# seg.create_new_matrix(64, 32, 16)
 seg.create_new_matrix(12, 8, 3)
+# seg.create_new_matrix(128, 68, 30)
 
 seg.generate_random_segmentation()
 seg.print_input_matrix()
