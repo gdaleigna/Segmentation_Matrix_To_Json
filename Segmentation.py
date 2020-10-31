@@ -220,6 +220,7 @@ seg = SegmentationMatrix()
 
 seg.create_new_matrix(12, 8, 3)
 # seg.create_new_matrix(128, 68, 30)
+# seg.create_new_matrix(256, 256, 100)
 
 seg.generate_random_segmentation()
 seg.print_input_matrix()
