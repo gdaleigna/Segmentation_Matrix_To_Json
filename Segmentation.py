@@ -166,27 +166,22 @@ class SegmentationMatrix:
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
                     if self.input_matrix[i][j][k] > 0:
-                        all_coordinates.append(SegmentationCoordinate(k, j, i))
+                        all_coordinates.append([k, j, i])
 
         self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
-    def print_size_input_objects(self):
-        print("Number of 1s:", self.total_of_pixels)
-
     def create_lookup_coordinates_according_to_adjacency(self, node, adjacency):
         neighbors = []
-        x, y, z = node.get_coordinates()
 
         for neighbor in adjacency:
-            lookup_x = x + neighbor[0]
-            lookup_y = y + neighbor[1]
-            lookup_z = z + neighbor[2]
+            lookup_x = node[0] + neighbor[0]
+            lookup_y = node[1] + neighbor[1]
+            lookup_z = node[2] + neighbor[2]
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
                 if self.matrix[lookup_z][lookup_y][lookup_x]:
-                    neighbors.append(SegmentationCoordinate(lookup_x, lookup_y, lookup_z))
+                    neighbors.append([lookup_x, lookup_y, lookup_z])
                     self.matrix[lookup_z][lookup_y][lookup_x] = False
-                    # print(node.get_coordinates(), "found at match at (", lookup_x, lookup_y, lookup_z, ")")
 
         return neighbors
 
@@ -197,24 +192,24 @@ class SegmentationMatrix:
         all_mri_objects = []
         mri_object = []
 
-        self.print_size_input_objects()
+        print("Number of 1s:", self.total_of_pixels)
 
         while len(all_coordinates) > 0:
             node = all_coordinates.popleft()
-            print(len(all_mri_objects) + 1, ":", node.get_coordinates(), ": ", end='')
+            print(len(all_mri_objects) + 1, ":", node, ": ", end='')
             mri_object.append(node)
             lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(node, adjacency)
+            all_coordinates_copy = list(all_coordinates)
             for neighbor in lookup_coordinates:
                 # if self.matrix[neighbor.z][neighbor.y][neighbor.x]: # Change this line to use a find function as opposed to a
-                    print(neighbor.get_coordinates(), ", ", end='', sep='')
+                    print(neighbor, ", ", end='', sep='')
                     # all_coordinates.remove(neighbor.get_coordinates()) # TODO: Create a find function for all_coordinates deque
-                    for i in all_coordinates:
-                        print("i.get_coordinates() :", i.get_coordinates())
-                        if i.is_equal(neighbor):
-                            # all_coordinates.remove(i)
-                            print("Delete I")
+                    for e in all_coordinates_copy:
+                        if e == neighbor:
+                            all_coordinates.remove(e)
+                            print("Delete ", end='')
 
-                    mri_object.append(SegmentationCoordinate(neighbor.x, neighbor.y, neighbor.z))
+                    mri_object.append(SegmentationCoordinate(neighbor[0], neighbor[1], neighbor[2]))
 
 
                 # if all_coordinates.__contains__(neighbor):
