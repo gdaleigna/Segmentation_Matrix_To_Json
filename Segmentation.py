@@ -158,20 +158,6 @@ class SegmentationMatrix:
                 print()
             print()
 
-    def print_matrix(self, matrix):
-        for i in range(0, self.size_z):
-            for j in range(0, self.size_y):
-                for k in range(0, self.size_x):
-                    if matrix[i][j][k]:
-                        print("1", end='')
-                    else:
-                        print(".", end='')
-
-                    print(" ", end='')
-
-                print()
-            print()
-
     def get_all_input_coordinates(self):
         all_coordinates = deque()
 
@@ -202,14 +188,11 @@ class SegmentationMatrix:
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
         all_coordinates = self.get_all_input_coordinates()
-        mri_objects = []
-
-        print("Number of 1s:", self.total_of_pixels)
 
         while len(all_coordinates) > 0:
-            mri_object = SegmentationObject()
+            segmentation_object = SegmentationObject()
             node = all_coordinates.popleft()
-            mri_object.add(node[0], node[1], node[2])
+            segmentation_object.add(node[0], node[1], node[2])
 
             index_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
             lookup_coordinates = index_coordinates.copy()
@@ -223,14 +206,39 @@ class SegmentationMatrix:
 
             for neighbor in lookup_coordinates:
                 all_coordinates.remove(neighbor)
-                mri_object.add(neighbor[0], neighbor[1], neighbor[2])
+                segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
-            mri_objects.append(mri_object)
-
-        print("Found", len(mri_objects), "independent object(s).")
+            self.segmentation_objects.append(segmentation_object)
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
+
+    def print_independent_objects(self):
+        print(self.total_of_pixels, "pixel(s) form", len(self.segmentation_objects), "independent object(s).")
+
+        display_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=int)
+
+        index = 1
+
+        for segmentation_object in self.segmentation_objects:
+            for coordinate in segmentation_object.segmentation_object:
+                x, y, z = coordinate.get_coordinates()
+                display_matrix[z][y][x] = index
+
+            index += 1
+
+        for i in range(0, self.size_z):
+            for j in range(0, self.size_y):
+                for k in range(0, self.size_x):
+                    if display_matrix[i][j][k] != 0:
+                        print(display_matrix[i][j][k], end='')
+                    else:
+                        print(".", end='')
+
+                    print(" ", end='')
+
+                print()
+            print()
 
 
 # MAIN
@@ -247,6 +255,8 @@ seg.generate_random_segmentation()
 seg.print_input_matrix()
 
 seg.find_independent_objects_from_adjacency(1)
+
+seg.print_independent_objects()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
