@@ -141,7 +141,7 @@ class SegmentationMatrix:
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    self.input_matrix[i][j][k] = True #if random.randint(0, 3) == 1 else 0
+                    self.input_matrix[i][j][k] = True if random.randint(0, 3) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -199,6 +199,19 @@ class SegmentationMatrix:
 
         return neighbors
 
+    def find_mri_object(self, lookup_matrix, node, adjacency):
+        lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
+        all_coordinates = lookup_coordinates.copy()
+
+        while len(lookup_coordinates) > 0:
+            index = lookup_coordinates[0]
+            tmp = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, index, adjacency)
+            all_coordinates.extend(tmp)
+            lookup_coordinates.extend(tmp)
+            lookup_coordinates.remove(index)
+
+        return all_coordinates
+
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
         all_coordinates = self.get_all_input_coordinates()
@@ -211,7 +224,7 @@ class SegmentationMatrix:
             node = all_coordinates.popleft()
             print(len(mri_objects) + 1, ":", node, ": ", end='')
             mri_object.add(node[0], node[1], node[2])
-            lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
+            lookup_coordinates = self.find_mri_object(lookup_matrix, node, adjacency)
 
             for neighbor in lookup_coordinates:
                 print(neighbor, ", ", end='', sep='')
@@ -234,7 +247,7 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(5, 4, 3)
+seg.create_new_matrix(12, 8, 3)
 # seg.create_new_matrix(128, 68, 30)
 # seg.create_new_matrix(256, 256, 100)
 
