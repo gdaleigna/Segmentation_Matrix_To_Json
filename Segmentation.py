@@ -170,54 +170,52 @@ class SegmentationMatrix:
         self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
-    def get_first_element_in_lookup_matrix(self, matrix, index_z):
-        for i in range(index_z, self.size_z):
+    def get_first_element_in_lookup_matrix(self, z):
+        for i in range(z, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    if self.input_matrix[i][j][k] != 0:
+                    if self.input_matrix[i][j][k]:
                         return False, [k, j, i]
 
         return True, []
 
-    def create_lookup_coordinates_according_to_adjacency(self, matrix, node, adjacency):
+    def create_lookup_coordinates_according_to_adjacency(self, adjacency, node):
         neighbors = []
-        matrix[node[2]][node[1]][node[0]] = False
+        self.input_matrix[node[2]][node[1]][node[0]] = False
 
         for neighbor in adjacency:
             lookup_x = node[0] + neighbor[0]
             lookup_y = node[1] + neighbor[1]
             lookup_z = node[2] + neighbor[2]
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
-                if matrix[lookup_z][lookup_y][lookup_x]:
+                if self.input_matrix[lookup_z][lookup_y][lookup_x]:
                     neighbors.append([lookup_x, lookup_y, lookup_z])
-                    matrix[lookup_z][lookup_y][lookup_x] = False
+                    self.input_matrix[lookup_z][lookup_y][lookup_x] = False
 
         return neighbors
 
     def find_proximity(self, adjacency):
-        lookup_matrix = self.input_matrix
-        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(lookup_matrix, 0)
+        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(0)
 
         while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
             segmentation_object.add(node[0], node[1], node[2])
 
-            index_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
+            index_coordinates = self.create_lookup_coordinates_according_to_adjacency(adjacency, node)
             lookup_coordinates = index_coordinates.copy()
 
             while len(index_coordinates) > 0:
                 index = index_coordinates[0]
-                tmp = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, index, adjacency)
+                tmp = self.create_lookup_coordinates_according_to_adjacency(adjacency, index)
                 lookup_coordinates.extend(tmp)
                 index_coordinates.extend(tmp)
                 index_coordinates.remove(index)
 
             for neighbor in lookup_coordinates:
-                # all_coordinates.remove(neighbor)  # This line is the current bottleneck
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
-            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(lookup_matrix, node[2])
+            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(node[2])
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
@@ -252,8 +250,8 @@ seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 # seg.create_new_matrix(16, 8, 3)
-seg.create_new_matrix(128, 128, 10)
-# seg.create_new_matrix(256, 256, 100)
+# seg.create_new_matrix(128, 128, 10)
+seg.create_new_matrix(256, 256, 30)
 
 seg.generate_random_segmentation()
 # seg.print_input_matrix()
