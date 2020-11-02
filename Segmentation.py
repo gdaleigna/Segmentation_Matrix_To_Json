@@ -205,7 +205,7 @@ class SegmentationMatrix:
                 index_coordinates.remove(index)
 
             for neighbor in lookup_coordinates:
-                all_coordinates.remove(neighbor)
+                all_coordinates.remove(neighbor)  # This line is the current bottleneck
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
@@ -214,17 +214,13 @@ class SegmentationMatrix:
         self.find_proximity(get_adjacency_for_selection(mode))
 
     def print_independent_objects(self):
-        print(self.total_of_pixels, "pixel(s) form", len(self.segmentation_objects), "independent object(s).")
-
+        print("Displaying independent objects.")
         display_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=int)
-
         index = 1
-
         for segmentation_object in self.segmentation_objects:
             for coordinate in segmentation_object.segmentation_object:
                 x, y, z = coordinate.get_coordinates()
                 display_matrix[z][y][x] = index
-
             index += 1
 
         for i in range(0, self.size_z):
@@ -236,7 +232,6 @@ class SegmentationMatrix:
                         print(".", end='')
 
                     print(" ", end='')
-
                 print()
             print()
 
@@ -247,8 +242,8 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(12, 8, 3)
-# seg.create_new_matrix(128, 68, 30)
+# seg.create_new_matrix(16, 8, 3)
+seg.create_new_matrix(128, 68, 10)
 # seg.create_new_matrix(256, 256, 100)
 
 seg.generate_random_segmentation()
@@ -257,6 +252,7 @@ seg.print_input_matrix()
 seg.find_independent_objects_from_adjacency(1)
 
 seg.print_independent_objects()
+print(seg.total_of_pixels, "pixel(s) form", len(seg.segmentation_objects), "independent object(s).")
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
