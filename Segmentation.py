@@ -170,8 +170,8 @@ class SegmentationMatrix:
         self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
-    def get_first_element_in_lookup_matrix(self, matrix):
-        for i in range(0, self.size_z):
+    def get_first_element_in_lookup_matrix(self, matrix, index_z):
+        for i in range(index_z, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
                     if self.input_matrix[i][j][k] != 0:
@@ -198,7 +198,7 @@ class SegmentationMatrix:
         lookup_matrix = self.input_matrix
         # all_coordinates = self.get_all_input_coordinates()
 
-        is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix)
+        is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix, 0)
 
         while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
@@ -220,7 +220,7 @@ class SegmentationMatrix:
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
-            is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix)
+            is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix, node2[2])
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
@@ -255,16 +255,16 @@ seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 # seg.create_new_matrix(16, 8, 3)
-seg.create_new_matrix(128, 68, 10)
+seg.create_new_matrix(128, 128, 10)
 # seg.create_new_matrix(256, 256, 100)
 
 seg.generate_random_segmentation()
-seg.print_input_matrix()
+# seg.print_input_matrix()
 
 seg.find_independent_objects_from_adjacency(1)
 
-seg.print_independent_objects()
-print(seg.total_of_pixels, "pixel(s) form", len(seg.segmentation_objects), "independent object(s).")
+# seg.print_independent_objects()
+print(len(seg.segmentation_objects), "independent object(s).")
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
