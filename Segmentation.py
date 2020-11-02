@@ -79,25 +79,8 @@ class SegmentationObject:
     def __init__(self):
         self.segmentation_object = []
 
-    # def __contains__(self, coordinate):
-    #     for node in self.segmentation_object:
-    #         if coordinate.get_coordinates() == node.get_coordinates():
-    #             return True
-    #
-    #     return False
-
     def add(self, x, y, z):
         self.segmentation_object.append(SegmentationCoordinate(x, y, z))
-
-    def is_empty(self):
-        return self.segmentation_object == []
-
-    def find(self, coordinate):
-        for node in self.segmentation_object:
-            if coordinate.get_coordinates() == node.get_coordinates():
-                return node
-
-        return None
 
     def size(self):
         return len(self.segmentation_object)
@@ -112,13 +95,11 @@ class SegmentationMatrix:
     size_y: int
     size_z: int
     mode: int
-    total_of_pixels: int
 
     def __init__(self):
         self.size_x = 3
         self.size_y = 3
         self.size_z = 2
-        self.total_of_pixels = -1
         self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
         self.segmentation_objects = []
 
@@ -137,11 +118,11 @@ class SegmentationMatrix:
         self.size_z = z
         self.input_matrix = np.zeros((z, y, x), dtype=bool)
 
-    def generate_random_segmentation(self):
+    def generate_random_segmentation(self, range_factor):
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    self.input_matrix[i][j][k] = True if random.randint(0, 3) == 1 else 0
+                    self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -157,18 +138,6 @@ class SegmentationMatrix:
 
                 print()
             print()
-
-    def get_all_input_coordinates(self):
-        all_coordinates = deque()
-
-        for i in range(0, self.size_z):
-            for j in range(0, self.size_y):
-                for k in range(0, self.size_x):
-                    if self.input_matrix[i][j][k] > 0:
-                        all_coordinates.append([k, j, i])
-
-        self.total_of_pixels = len(all_coordinates)
-        return all_coordinates
 
     def get_first_element_in_lookup_matrix(self, z):
         for i in range(z, self.size_z):
@@ -253,12 +222,11 @@ seg = SegmentationMatrix()
 seg.create_new_matrix(128, 128, 10)
 # seg.create_new_matrix(256, 256, 30)
 
-seg.generate_random_segmentation()
+seg.generate_random_segmentation(3)
 # seg.print_input_matrix()
-
 seg.find_independent_objects_from_adjacency(1)
-
 # seg.print_independent_objects()
+
 print(len(seg.segmentation_objects), "independent object(s).")
 
 # TIMER
