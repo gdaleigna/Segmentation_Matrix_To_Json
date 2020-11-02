@@ -196,13 +196,10 @@ class SegmentationMatrix:
 
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
-        # all_coordinates = self.get_all_input_coordinates()
-
-        is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix, 0)
+        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(lookup_matrix, 0)
 
         while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
-            node = node2
             segmentation_object.add(node[0], node[1], node[2])
 
             index_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
@@ -220,7 +217,7 @@ class SegmentationMatrix:
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
-            is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix, node2[2])
+            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(lookup_matrix, node[2])
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
