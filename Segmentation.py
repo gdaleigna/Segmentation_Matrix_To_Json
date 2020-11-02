@@ -199,19 +199,6 @@ class SegmentationMatrix:
 
         return neighbors
 
-    def find_mri_object(self, lookup_matrix, node, adjacency):
-        lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
-        all_coordinates = lookup_coordinates.copy()
-
-        while len(lookup_coordinates) > 0:
-            index = lookup_coordinates[0]
-            tmp = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, index, adjacency)
-            all_coordinates.extend(tmp)
-            lookup_coordinates.extend(tmp)
-            lookup_coordinates.remove(index)
-
-        return all_coordinates
-
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
         all_coordinates = self.get_all_input_coordinates()
@@ -222,23 +209,28 @@ class SegmentationMatrix:
         while len(all_coordinates) > 0:
             mri_object = SegmentationObject()
             node = all_coordinates.popleft()
-            print(len(mri_objects) + 1, ":", node, ": ", end='')
             mri_object.add(node[0], node[1], node[2])
-            lookup_coordinates = self.find_mri_object(lookup_matrix, node, adjacency)
+
+            index_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
+            lookup_coordinates = index_coordinates.copy()
+
+            while len(index_coordinates) > 0:
+                index = index_coordinates[0]
+                tmp = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, index, adjacency)
+                lookup_coordinates.extend(tmp)
+                index_coordinates.extend(tmp)
+                index_coordinates.remove(index)
 
             for neighbor in lookup_coordinates:
-                print(neighbor, ", ", end='', sep='')
                 all_coordinates.remove(neighbor)
                 mri_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             mri_objects.append(mri_object)
-            print()
-            self.print_matrix(lookup_matrix)
 
-        print("Done")
+        print("Found", len(mri_objects), "independent object(s).")
 
-    def find_independent_objects_from_adjacency(self):
-        self.find_proximity(get_adjacency_for_selection(1))
+    def find_independent_objects_from_adjacency(self, mode):
+        self.find_proximity(get_adjacency_for_selection(mode))
 
 
 # MAIN
@@ -254,7 +246,7 @@ seg.create_new_matrix(12, 8, 3)
 seg.generate_random_segmentation()
 seg.print_input_matrix()
 
-seg.find_independent_objects_from_adjacency()
+seg.find_independent_objects_from_adjacency(1)
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
