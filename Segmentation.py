@@ -170,6 +170,15 @@ class SegmentationMatrix:
         self.total_of_pixels = len(all_coordinates)
         return all_coordinates
 
+    def get_first_element_in_lookup_matrix(self, matrix):
+        for i in range(0, self.size_z):
+            for j in range(0, self.size_y):
+                for k in range(0, self.size_x):
+                    if self.input_matrix[i][j][k] != 0:
+                        return False, [k, j, i]
+
+        return True, []
+
     def create_lookup_coordinates_according_to_adjacency(self, matrix, node, adjacency):
         neighbors = []
         matrix[node[2]][node[1]][node[0]] = False
@@ -187,11 +196,13 @@ class SegmentationMatrix:
 
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
-        all_coordinates = self.get_all_input_coordinates()
+        # all_coordinates = self.get_all_input_coordinates()
 
-        while len(all_coordinates) > 0:
+        is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix)
+
+        while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
-            node = all_coordinates.popleft()
+            node = node2
             segmentation_object.add(node[0], node[1], node[2])
 
             index_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
@@ -205,10 +216,11 @@ class SegmentationMatrix:
                 index_coordinates.remove(index)
 
             for neighbor in lookup_coordinates:
-                all_coordinates.remove(neighbor)  # This line is the current bottleneck
+                # all_coordinates.remove(neighbor)  # This line is the current bottleneck
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
+            is_lookup_matrix_empty, node2 = self.get_first_element_in_lookup_matrix(lookup_matrix)
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
