@@ -141,7 +141,7 @@ class SegmentationMatrix:
         for i in range(0, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    self.input_matrix[i][j][k] = True if random.randint(0, 3) == 1 else 0
+                    self.input_matrix[i][j][k] = True #if random.randint(0, 3) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -149,6 +149,20 @@ class SegmentationMatrix:
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
                     if self.input_matrix[i][j][k]:
+                        print("1", end='')
+                    else:
+                        print(".", end='')
+
+                    print(" ", end='')
+
+                print()
+            print()
+
+    def print_matrix(self, matrix):
+        for i in range(0, self.size_z):
+            for j in range(0, self.size_y):
+                for k in range(0, self.size_x):
+                    if matrix[i][j][k]:
                         print("1", end='')
                     else:
                         print(".", end='')
@@ -172,6 +186,7 @@ class SegmentationMatrix:
 
     def create_lookup_coordinates_according_to_adjacency(self, matrix, node, adjacency):
         neighbors = []
+        matrix[node[2]][node[1]][node[0]] = False
 
         for neighbor in adjacency:
             lookup_x = node[0] + neighbor[0]
@@ -187,24 +202,25 @@ class SegmentationMatrix:
     def find_proximity(self, adjacency):
         lookup_matrix = self.input_matrix
         all_coordinates = self.get_all_input_coordinates()
-        all_mri_objects = []
-        mri_object = []
+        mri_objects = []
 
         print("Number of 1s:", self.total_of_pixels)
 
         while len(all_coordinates) > 0:
+            mri_object = SegmentationObject()
             node = all_coordinates.popleft()
-            print(len(all_mri_objects) + 1, ":", node, ": ", end='')
-            mri_object.append(node)  # TODO: Replace with SegmentationObject object
+            print(len(mri_objects) + 1, ":", node, ": ", end='')
+            mri_object.add(node[0], node[1], node[2])
             lookup_coordinates = self.create_lookup_coordinates_according_to_adjacency(lookup_matrix, node, adjacency)
+
             for neighbor in lookup_coordinates:
                 print(neighbor, ", ", end='', sep='')
                 all_coordinates.remove(neighbor)
+                mri_object.add(neighbor[0], neighbor[1], neighbor[2])
 
-                mri_object.append(SegmentationCoordinate(neighbor[0], neighbor[1], neighbor[2]))
-
-            all_mri_objects.append(mri_object)
+            mri_objects.append(mri_object)
             print()
+            self.print_matrix(lookup_matrix)
 
         print("Done")
 
@@ -218,7 +234,7 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(12, 8, 3)
+seg.create_new_matrix(5, 4, 3)
 # seg.create_new_matrix(128, 68, 30)
 # seg.create_new_matrix(256, 256, 100)
 
