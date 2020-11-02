@@ -250,8 +250,8 @@ seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 # seg.create_new_matrix(16, 8, 3)
-# seg.create_new_matrix(128, 128, 10)
-seg.create_new_matrix(256, 256, 30)
+seg.create_new_matrix(128, 128, 10)
+# seg.create_new_matrix(256, 256, 30)
 
 seg.generate_random_segmentation()
 # seg.print_input_matrix()
