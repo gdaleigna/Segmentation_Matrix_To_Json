@@ -4,6 +4,7 @@ import random
 import time
 from datetime import datetime
 
+
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
     adjacency = (-1, 0, 0), \
@@ -212,26 +213,23 @@ class SegmentationMatrix:
             print()
 
     def write_to_json(self):
-
         file_name = "Segmentation_" + datetime.now().strftime("%Y-%m-%d at %H.%M.%S") + ".json"
 
-        dictionary = {
+        json_data = {
             "file_name": "Brats18_2013_2_1_flair.nii",
             "size_x": self.size_x,
             "size_y": self.size_y,
             "size_z": self.size_z
         }
 
-        json_object = json.dumps(dictionary, indent=4)
+        json_object = json.dumps(json_data, indent=4)
         with open(file_name, "w") as outfile:
             outfile.write(json_object)
 
         print("JSON successfully saved to " + file_name)
 
 
-
-
-        # MAIN
+# MAIN
 start_time = time.time()
 
 seg = SegmentationMatrix()
