@@ -100,17 +100,34 @@ class SegmentationObject:
 
 
 class SegmentationMatrix:
+    file_name: str
     size_x: int
     size_y: int
     size_z: int
     mode: int
 
-    def __init__(self):
-        self.size_x = 3
-        self.size_y = 3
-        self.size_z = 2
-        self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
-        self.segmentation_objects = []
+    def __init__(self, array, file_name, mode_selection, lookup_value):
+        if array.ndim == 4:
+            size_x = np.shape(array)[2]
+            size_y = np.shape(array)[1]
+            size_z = np.shape(array)[0]
+
+            self.file_name = file_name
+            self.size_x = size_x
+            self.size_y = size_y
+            self.size_z = size_z
+            self.mode = np.shape(array)[3]
+            self.input_matrix = np.zeros((size_z, size_y, size_x), dtype=bool)
+            self.segmentation_objects = []
+
+            for i in range(0, size_z):
+                for j in range(0, size_y):
+                    for k in range(0, size_x):
+                        self.input_matrix[i][j][k] = True if array[i][j][k][mode_selection] == lookup_value \
+                            else False
+
+        else:
+            print("ERROR: Incompatible Matrix")
 
     # def __init__(self):
     #     self.size_x = 3
@@ -118,27 +135,18 @@ class SegmentationMatrix:
     #     self.size_z = 2
     #     self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
     #     self.segmentation_objects = []
-
-    def copy_matrix_from_numpy_array(self, numpy_array):
-        if numpy_array.ndim == 3:
-            self.size_x = np.shape(numpy_array)[1]
-            self.size_y = np.shape(numpy_array)[2]
-            self.size_z = np.shape(numpy_array)[0]
-            self.input_matrix = numpy_array
-        else:
-            print("ERROR: Incompatible Matrix")
-
-    def create_new_matrix(self, x, y, z):
-        self.size_x = x
-        self.size_y = y
-        self.size_z = z
-        self.input_matrix = np.zeros((z, y, x), dtype=bool)
-
-    def generate_random_segmentation(self, range_factor):
-        for i in range(0, self.size_z):
-            for j in range(0, self.size_y):
-                for k in range(0, self.size_x):
-                    self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
+    #
+    # def create_new_matrix(self, x, y, z):
+    #     self.size_x = x
+    #     self.size_y = y
+    #     self.size_z = z
+    #     self.input_matrix = np.zeros((z, y, x), dtype=bool)
+    #
+    # def generate_random_segmentation(self, range_factor):
+    #     for i in range(0, self.size_z):
+    #         for j in range(0, self.size_y):
+    #             for k in range(0, self.size_x):
+    #                 self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -232,6 +240,7 @@ class SegmentationMatrix:
 
         json_data = {
             "file_name": "Brats18_2013_2_1_flair.nii",
+            "version": 0,
             "size_x": self.size_x,
             "size_y": self.size_y,
             "size_z": self.size_z,
@@ -258,10 +267,23 @@ class SegmentationMatrix:
 # MAIN
 start_time = time.time()
 
-seg = SegmentationMatrix()
+x = 16
+y = 8
+z = 3
+modes = 2
+
+numpy_array = np.zeros((z, y, x, modes))
+numpy_array[0][4][3] = 1
+numpy_array[0][5][4] = 1
+numpy_array[1][6][5] = 1
+numpy_array[2][7][6] = 1
+numpy_array[2][7][7] = 1
+
+
+seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(128, 128, 10)
+# seg.create_new_matrix(128, 128, 10)
 
 # seg.generate_random_segmentation(3)
 # seg.print_input_matrix()
