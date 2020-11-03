@@ -1,8 +1,8 @@
 import numpy as np
-from collections import deque
+import json
 import random
 import time
-
+from datetime import datetime
 
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
@@ -211,8 +211,27 @@ class SegmentationMatrix:
                 print()
             print()
 
+    def write_to_json(self):
 
-# MAIN
+        file_name = "Segmentation_" + datetime.now().strftime("%Y-%m-%d at %H.%M.%S") + ".json"
+
+        dictionary = {
+            "file_name": "Brats18_2013_2_1_flair.nii",
+            "size_x": self.size_x,
+            "size_y": self.size_y,
+            "size_z": self.size_z
+        }
+
+        json_object = json.dumps(dictionary, indent=4)
+        with open(file_name, "w") as outfile:
+            outfile.write(json_object)
+
+        print("JSON successfully saved to " + file_name)
+
+
+
+
+        # MAIN
 start_time = time.time()
 
 seg = SegmentationMatrix()
@@ -226,6 +245,8 @@ seg.generate_random_segmentation(3)
 # seg.print_input_matrix()
 seg.find_independent_objects_from_adjacency(1)
 # seg.print_independent_objects()
+
+seg.write_to_json()
 
 print(len(seg.segmentation_objects), "independent object(s).")
 
