@@ -90,6 +90,14 @@ class SegmentationObject:
         for node in self.segmentation_object:
             node.print()
 
+    def print_json_list(self):
+        nodes = []
+        for node in self.segmentation_object:
+            x, y, z = node.get_coordinates()
+            nodes.append(str(x) + ", " + str(y) + ", " + str(z))
+
+        return nodes
+
 
 class SegmentationMatrix:
     size_x: int
@@ -219,8 +227,19 @@ class SegmentationMatrix:
             "file_name": "Brats18_2013_2_1_flair.nii",
             "size_x": self.size_x,
             "size_y": self.size_y,
-            "size_z": self.size_z
+            "size_z": self.size_z,
+            "data": []
         }
+
+        name_index = 0
+        for segmentation_object in self.segmentation_objects:
+            name_index += 1
+            json_data['data'].append({
+                "name": "Segmentation Object " + str(name_index),
+                "coordinates": segmentation_object.print_json_list(),
+                "color": None,
+                "size": segmentation_object.size()
+            })
 
         json_object = json.dumps(json_data, indent=4)
         with open(file_name, "w") as outfile:
@@ -235,8 +254,8 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-# seg.create_new_matrix(16, 8, 3)
-seg.create_new_matrix(128, 128, 10)
+seg.create_new_matrix(16, 8, 3)
+# seg.create_new_matrix(128, 128, 10)
 # seg.create_new_matrix(256, 256, 30)
 
 seg.generate_random_segmentation(3)
