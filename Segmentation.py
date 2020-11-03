@@ -279,12 +279,9 @@ numpy_array[1][6][5] = 1
 numpy_array[2][7][6] = 1
 numpy_array[2][7][7] = 1
 
-
 seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
-# seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
 # seg.create_new_matrix(128, 128, 10)
-
 # seg.generate_random_segmentation(3)
 # seg.print_input_matrix()
 
@@ -293,8 +290,6 @@ print(len(seg.segmentation_objects), "independent object(s).")
 
 # seg.print_independent_objects()
 seg.write_to_json()
-
-
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
