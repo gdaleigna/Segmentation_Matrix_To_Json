@@ -112,6 +112,13 @@ class SegmentationMatrix:
         self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
         self.segmentation_objects = []
 
+    # def __init__(self):
+    #     self.size_x = 3
+    #     self.size_y = 3
+    #     self.size_z = 2
+    #     self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
+    #     self.segmentation_objects = []
+
     def copy_matrix_from_numpy_array(self, numpy_array):
         if numpy_array.ndim == 3:
             self.size_x = np.shape(numpy_array)[1]
@@ -254,18 +261,18 @@ start_time = time.time()
 seg = SegmentationMatrix()
 # seg.copy_matrix_from_numpy_array(segmentation_matrix)
 
-seg.create_new_matrix(16, 8, 3)
-# seg.create_new_matrix(128, 128, 10)
-# seg.create_new_matrix(256, 256, 30)
+seg.create_new_matrix(128, 128, 10)
 
-seg.generate_random_segmentation(3)
+# seg.generate_random_segmentation(3)
 # seg.print_input_matrix()
-seg.find_independent_objects_from_adjacency(1)
-# seg.print_independent_objects()
 
+seg.find_independent_objects_from_adjacency(1)
+print(len(seg.segmentation_objects), "independent object(s).")
+
+# seg.print_independent_objects()
 seg.write_to_json()
 
-print(len(seg.segmentation_objects), "independent object(s).")
+
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
