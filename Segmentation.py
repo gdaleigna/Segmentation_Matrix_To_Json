@@ -279,6 +279,16 @@ numpy_array[1][6][5] = 1
 numpy_array[2][7][6] = 1
 numpy_array[2][7][7] = 1
 
+numpy_array[0][0][0] = 1
+numpy_array[0][0][1] = 1
+numpy_array[0][0][2] = 1
+numpy_array[0][0][3] = 1
+
+numpy_array[2][0][0] = 1
+numpy_array[2][0][1] = 1
+numpy_array[2][0][2] = 1
+numpy_array[2][0][3] = 1
+
 seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
 
 # seg.create_new_matrix(128, 128, 10)
