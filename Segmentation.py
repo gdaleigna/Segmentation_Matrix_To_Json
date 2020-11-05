@@ -129,24 +129,24 @@ class SegmentationMatrix:
         else:
             print("ERROR: Incompatible Matrix")
 
-    # def __init__(self):
-    #     self.size_x = 3
-    #     self.size_y = 3
-    #     self.size_z = 2
-    #     self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
-    #     self.segmentation_objects = []
-    #
-    # def create_new_matrix(self, x, y, z):
-    #     self.size_x = x
-    #     self.size_y = y
-    #     self.size_z = z
-    #     self.input_matrix = np.zeros((z, y, x), dtype=bool)
-    #
-    # def generate_random_segmentation(self, range_factor):
-    #     for i in range(0, self.size_z):
-    #         for j in range(0, self.size_y):
-    #             for k in range(0, self.size_x):
-    #                 self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
+    def __init__(self):
+        self.size_x = 3
+        self.size_y = 3
+        self.size_z = 2
+        self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
+        self.segmentation_objects = []
+
+    def create_new_matrix(self, x, y, z):
+        self.size_x = x
+        self.size_y = y
+        self.size_z = z
+        self.input_matrix = np.zeros((z, y, x), dtype=bool)
+
+    def generate_random_segmentation(self, range_factor):
+        for i in range(0, self.size_z):
+            for j in range(0, self.size_y):
+                for k in range(0, self.size_x):
+                    self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -289,17 +289,18 @@ numpy_array[2][0][1] = 1
 numpy_array[2][0][2] = 1
 numpy_array[2][0][3] = 1
 
-seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
+# seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
+seg = SegmentationMatrix()
 
-# seg.create_new_matrix(128, 128, 10)
-# seg.generate_random_segmentation(3)
-# seg.print_input_matrix()
+seg.create_new_matrix(16, 8, 3)
+seg.generate_random_segmentation(3)
+seg.print_input_matrix()
 
 seg.find_independent_objects_from_adjacency(1)
 print(len(seg.segmentation_objects), "independent object(s).")
 
-# seg.print_independent_objects()
-seg.write_to_json()
+seg.print_independent_objects()
+# seg.write_to_json()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
