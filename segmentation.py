@@ -2,6 +2,8 @@ import numpy as np
 import json
 from datetime import datetime
 
+MIN_SIZE = 25
+
 
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
@@ -89,17 +91,20 @@ class SegmentationObject:
             node.print()
 
     def print_json_list(self):
-        lookup_tree = {}
+        nodes = {}
         for node in self.segmentation_object:
             x, y, z = node.get_coordinates()
-            if not lookup_tree.__contains__(z):
-                lookup_tree[z] = {}
-            if not lookup_tree[z].__contains__(y):
-                lookup_tree[z][y] = str(x)
-            else:
-                lookup_tree[z][y] += ", " + str(x)
+            if not nodes.__contains__(z):
+                nodes[z] = {}
+            if not nodes[z].__contains__(y):
+                nodes[z][y] = []
+            nodes[z][y].append(x)
 
-        return lookup_tree
+        lookup_tree = {}
+        # for node in sorted(nodes:)
+            
+
+        return nodes
 
 
 class SegmentationMatrix:
@@ -234,7 +239,7 @@ class SegmentationMatrix:
 
         name_index = 0
         for segmentation_object in self.segmentation_objects:
-            if segmentation_object.size() >= 25:  # Filters out objects that are smaller than n pixels
+            if segmentation_object.size() >= MIN_SIZE:  # Filters out objects that are smaller than MIN_SIZE pixels
                 name_index += 1
                 json_data['data'].append({
                     "name": "Segmentation Object " + str(name_index),
