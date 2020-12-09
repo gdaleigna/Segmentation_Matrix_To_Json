@@ -91,23 +91,18 @@ class SegmentationObject:
             node.print()
 
     def print_json_list(self):
-        nodes = []
         lookup_tree = {}
         for node in self.segmentation_object:
             x, y, z = node.get_coordinates()
-            nodes.append(str(x) + ", " + str(y) + ", " + str(z))
-            if lookup_tree[z] is None:
-                lookup_tree[z] = {} 
+            if not lookup_tree.__contains__(z):
+                lookup_tree[z] = {}
+            if not lookup_tree[z].__contains__(y):
+                lookup_tree[z][y] = []
+            lookup_tree[z][y].append(x)
 
-        # TODO: Change print to have a list of lists of lists for the coordinates
-        b = {}
-        b[0] = [1, 2, 3]
-        b[1] = [4, 5, 6]
-        b[1].append(42)
-        print(b[1])
-        print(b)
+        # TODO: Change print to have a string instead of lists
 
-        return nodes
+        return lookup_tree
 
 
 class SegmentationMatrix:
@@ -276,8 +271,8 @@ class SegmentationMatrix:
 # MAIN
 start_time = time.time()
 
-x = 12
-y = 12
+x = 128
+y = 128
 z = 10
 modes = 2
 range_factor = 3
