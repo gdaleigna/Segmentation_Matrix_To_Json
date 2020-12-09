@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import time
-from Segmentation import *
+from segmentation import *
 
 
 # MAIN
