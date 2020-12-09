@@ -97,10 +97,9 @@ class SegmentationObject:
             if not lookup_tree.__contains__(z):
                 lookup_tree[z] = {}
             if not lookup_tree[z].__contains__(y):
-                lookup_tree[z][y] = []
-            lookup_tree[z][y].append(x)
-
-        # TODO: Change print to have a string instead of lists
+                lookup_tree[z][y] = str(x)
+            else:
+                lookup_tree[z][y] += ", " + str(x)
 
         return lookup_tree
 
@@ -134,19 +133,6 @@ class SegmentationMatrix:
 
         else:
             print("ERROR: Incompatible Matrix")
-
-    # def __init__(self):
-    #     self.size_x = 3
-    #     self.size_y = 3
-    #     self.size_z = 2
-    #     self.input_matrix = np.zeros((self.size_z, self.size_y, self.size_x), dtype=bool)
-    #     self.segmentation_objects = []
-    #
-    # def create_new_matrix(self, x, y, z):
-    #     self.size_x = x
-    #     self.size_y = y
-    #     self.size_z = z
-    #     self.input_matrix = np.zeros((z, y, x), dtype=bool)
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -250,16 +236,16 @@ class SegmentationMatrix:
 
         name_index = 0
         for segmentation_object in self.segmentation_objects:
-            name_index += 1
-            json_data['data'].append({
-                "name": "Segmentation Object " + str(name_index),
-                "active": True,
-                "coordinates": segmentation_object.print_json_list(),
-                "color": None,
-                "hidden": False,
-                "size": segmentation_object.size(),
-                "visible": True
-            })
+            if segmentation_object.size() >= 5:  # Filters out objects that are smaller than n pixels
+                name_index += 1
+                json_data['data'].append({
+                    "name": "Segmentation Object " + str(name_index),
+                    "active": True,
+                    "coordinates": segmentation_object.print_json_list(),
+                    "color": None,
+                    "hidden": False,
+                    "size": segmentation_object.size()
+                })
 
         json_object = json.dumps(json_data, indent=4)
         with open(file_name, "w") as outfile:
@@ -275,7 +261,7 @@ x = 128
 y = 128
 z = 10
 modes = 2
-range_factor = 3
+range_factor = 4
 
 numpy_array = np.zeros((z, y, x, modes))
 
@@ -293,7 +279,7 @@ seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
 seg.find_independent_objects_from_adjacency(1)
 print(len(seg.segmentation_objects), "independent object(s).")
 
-seg.print_independent_objects()
+# seg.print_independent_objects()
 seg.write_to_json()
 
 # TIMER
