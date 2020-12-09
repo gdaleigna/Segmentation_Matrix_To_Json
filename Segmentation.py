@@ -92,9 +92,20 @@ class SegmentationObject:
 
     def print_json_list(self):
         nodes = []
+        lookup_tree = {}
         for node in self.segmentation_object:
             x, y, z = node.get_coordinates()
             nodes.append(str(x) + ", " + str(y) + ", " + str(z))
+            if lookup_tree[z] is None:
+                lookup_tree[z] = {} 
+
+        # TODO: Change print to have a list of lists of lists for the coordinates
+        b = {}
+        b[0] = [1, 2, 3]
+        b[1] = [4, 5, 6]
+        b[1].append(42)
+        print(b[1])
+        print(b)
 
         return nodes
 
@@ -141,12 +152,6 @@ class SegmentationMatrix:
     #     self.size_y = y
     #     self.size_z = z
     #     self.input_matrix = np.zeros((z, y, x), dtype=bool)
-    #
-    # def generate_random_segmentation(self, range_factor):
-    #     for i in range(0, self.size_z):
-    #         for j in range(0, self.size_y):
-    #             for k in range(0, self.size_x):
-    #                 self.input_matrix[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
 
     def print_input_matrix(self):
         print("Segmentation Size is", self.size_x, "x", self.size_y, "with", self.size_z, "image(s) and 1 mode.")
@@ -163,6 +168,7 @@ class SegmentationMatrix:
                 print()
             print()
 
+    # get_first_element_in_lookup_matrix() acts as a isEmpty() which also returns the first coordination if found
     def get_first_element_in_lookup_matrix(self, z):
         for i in range(z, self.size_z):
             for j in range(0, self.size_y):
@@ -252,9 +258,12 @@ class SegmentationMatrix:
             name_index += 1
             json_data['data'].append({
                 "name": "Segmentation Object " + str(name_index),
+                "active": True,
                 "coordinates": segmentation_object.print_json_list(),
                 "color": None,
-                "size": segmentation_object.size()
+                "hidden": False,
+                "size": segmentation_object.size(),
+                "visible": True
             })
 
         json_object = json.dumps(json_data, indent=4)
@@ -267,27 +276,18 @@ class SegmentationMatrix:
 # MAIN
 start_time = time.time()
 
-x = 16
-y = 8
-z = 3
+x = 12
+y = 12
+z = 10
 modes = 2
+range_factor = 3
 
 numpy_array = np.zeros((z, y, x, modes))
-numpy_array[0][4][3] = 1
-numpy_array[0][5][4] = 1
-numpy_array[1][6][5] = 1
-numpy_array[2][7][6] = 1
-numpy_array[2][7][7] = 1
 
-numpy_array[0][0][0] = 1
-numpy_array[0][0][1] = 1
-numpy_array[0][0][2] = 1
-numpy_array[0][0][3] = 1
-
-numpy_array[2][0][0] = 1
-numpy_array[2][0][1] = 1
-numpy_array[2][0][2] = 1
-numpy_array[2][0][3] = 1
+for i in range(0, z):
+    for j in range(0, y):
+        for k in range(0, x):
+            numpy_array[i][j][k] = True if random.randint(0, range_factor) == 1 else 0
 
 seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
 
@@ -298,7 +298,7 @@ seg = SegmentationMatrix(numpy_array, "Brats18_2013_2_1_flair.nii", 0, 1)
 seg.find_independent_objects_from_adjacency(1)
 print(len(seg.segmentation_objects), "independent object(s).")
 
-# seg.print_independent_objects()
+seg.print_independent_objects()
 seg.write_to_json()
 
 # TIMER
