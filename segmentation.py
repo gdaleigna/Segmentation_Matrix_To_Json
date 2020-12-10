@@ -101,10 +101,14 @@ class SegmentationObject:
             nodes[z][y].append(x)
 
         lookup_tree = {}
-        # for node in sorted(nodes:)
-            
+        for section in sorted(nodes.keys()):
+            print("section:", section, nodes[section])
+            for line in sorted(nodes[section].keys()):
+                if not lookup_tree.__contains__(section):
+                    lookup_tree[section] = {}
+                lookup_tree[section][line] = sorted(nodes[section][line])
 
-        return nodes
+        return lookup_tree
 
 
 class SegmentationMatrix:
