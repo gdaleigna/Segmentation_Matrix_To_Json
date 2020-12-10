@@ -7,8 +7,8 @@ from segmentation import *
 # MAIN
 start_time = time.time()
 
-x = 64
-y = 32
+x = 256
+y = 256
 z = 16
 modes = 2
 range_factor = 4
