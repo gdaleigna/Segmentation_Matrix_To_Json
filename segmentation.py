@@ -116,12 +116,15 @@ class SegmentationMatrix:
     size_y: int
     size_z: int
     mode: int
+    look_up_count: int
 
     def __init__(self, array, file_name, mode_selection, lookup_value):
         if array.ndim == 4:
             size_x = np.shape(array)[2]
             size_y = np.shape(array)[1]
             size_z = np.shape(array)[0]
+
+            self.look_up_count = 0
 
             self.file_name = file_name
             self.size_x = size_x
@@ -156,10 +159,26 @@ class SegmentationMatrix:
             print()
 
     # get_first_element_in_lookup_matrix() acts as a isEmpty() which also returns the first coordination if found
-    def get_first_element_in_lookup_matrix(self, z):
-        for i in range(z, self.size_z):
+    def get_first_element_in_lookup_matrix_and_is_empty(self, x, y, z):
+        # Range covers the rest of the line starting from lookup_node
+        while x < self.size_x:
+            self.look_up_count += 1
+            if self.input_matrix[z][y][x]:
+                return False, [x, y, z]
+            x += 1
+
+        # Range covers the bottom of the section starting at the line after lookup_node
+        for i in range(y, self.size_y):
+            for j in range(0, self.size_x):
+                self.look_up_count += 1
+                if self.input_matrix[z][i][j]:
+                    return False, [j, i, z]
+
+        # Range covers following sections after lookup_node
+        for i in range(z + 1, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
+                    self.look_up_count += 1
                     if self.input_matrix[i][j][k]:
                         return False, [k, j, i]
 
@@ -181,7 +200,7 @@ class SegmentationMatrix:
         return neighbors
 
     def find_proximity(self, adjacency):
-        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(0)
+        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(0, 0, 0)
 
         while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
@@ -201,7 +220,7 @@ class SegmentationMatrix:
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
-            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix(node[2])
+            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(node[0], node[1], node[2])
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
@@ -237,21 +256,25 @@ class SegmentationMatrix:
             "size_x": self.size_x,
             "size_y": self.size_y,
             "size_z": self.size_z,
+            "object_count": 0,
+            "filter_size": MIN_SIZE,
             "data": []
         }
 
-        name_index = 0
+        index = 0
         for segmentation_object in self.segmentation_objects:
             if segmentation_object.size() >= MIN_SIZE:  # Filters out objects that are smaller than MIN_SIZE pixels
-                name_index += 1
+                index += 1
                 json_data['data'].append({
-                    "name": "Segmentation Object " + str(name_index),
+                    "name": "Segmentation Object " + str(index),
+                    "size": segmentation_object.size(),
                     "active": True,
-                    "coordinates": segmentation_object.print_json_list(),
-                    "color": None,
                     "hidden": False,
-                    "size": segmentation_object.size()
+                    "color": None,
+                    "coordinates": segmentation_object.print_json_list()
                 })
+
+        json_data["object_count"] = index
 
         json_object = json.dumps(json_data, indent=4)
         with open(file_name, "w") as outfile:

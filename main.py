@@ -9,7 +9,7 @@ start_time = time.time()
 
 x = 256
 y = 256
-z = 16
+z = 10
 modes = 2
 range_factor = 4
 
@@ -34,3 +34,8 @@ seg.write_to_json()
 
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
+
+print("Image resolution", seg.size_x * seg.size_y * seg.size_z)
+print("Total lookups:", seg.look_up_count)
+print("Ratio:", seg.look_up_count / (seg.size_x * seg.size_y * seg.size_z))
+
