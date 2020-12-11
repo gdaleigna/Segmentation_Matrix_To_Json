@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import time
 from datetime import datetime
 
 
@@ -115,6 +116,7 @@ class SegmentationMatrix:
     size_z: int
     mode: int
     filter_size: int
+    completion_time: float
 
     def __init__(self, array, file_name, mode_selection, lookup_value, filter_size):
         if array.ndim == 4:
@@ -195,6 +197,7 @@ class SegmentationMatrix:
         return neighbors
 
     def find_proximity(self, adjacency):
+        start_time = time.time()
         is_lookup_matrix_empty = False
         node = [0, 0, 0]
         if not self.input_matrix[0][0][0]:
@@ -221,6 +224,8 @@ class SegmentationMatrix:
             is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(node[0], node[1],
                                                                                                 node[2])
 
+        self.completion_time = time.time() - start_time
+
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
 
@@ -246,9 +251,10 @@ class SegmentationMatrix:
                 print()
             print()
 
-    def write_to_json(self):
-        file_name = self.file_name.rsplit(".", 1)[0] + "_seg_" + \
-                    datetime.now().strftime("%Y-%m-%d at %H.%M.%S") + ".json"
+    def write_to_json(self, directory):
+        start_time = time.time()
+        file_name = self.file_name.rsplit(".", 1)[0] + "_seg_" + datetime.now().strftime("%Y-%m-%d_at_%H.%M.%S") \
+                    + ".json"
 
         json_data = {
             "file_name": self.file_name,
@@ -281,4 +287,7 @@ class SegmentationMatrix:
         with open(file_name, "w") as outfile:
             outfile.write(json_object)
 
-        print("JSON successfully saved to " + file_name)
+        # TODO: Change this line to include the needed information on the server shell if necessary
+        print("SUCCESS: Export completed in %ss" % str(round(self.completion_time + time.time() - start_time, 4)),
+              "with", self.segmentation_objects.__len__(), "object(s) for", self.file_name,
+              'saved as "' + file_name + '" to directory: "' + directory + '".')
