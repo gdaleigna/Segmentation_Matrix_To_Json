@@ -2,8 +2,6 @@ import numpy as np
 import json
 from datetime import datetime
 
-MIN_SIZE = 25
-
 
 # ADJACENCY DEFINITIONS
 def direct_adjacency():
@@ -116,15 +114,13 @@ class SegmentationMatrix:
     size_y: int
     size_z: int
     mode: int
-    look_up_count: int
+    filter_size: int
 
-    def __init__(self, array, file_name, mode_selection, lookup_value):
+    def __init__(self, array, file_name, mode_selection, lookup_value, filter_size):
         if array.ndim == 4:
             size_x = np.shape(array)[2]
             size_y = np.shape(array)[1]
             size_z = np.shape(array)[0]
-
-            self.look_up_count = 0
 
             self.file_name = file_name
             self.size_x = size_x
@@ -133,6 +129,7 @@ class SegmentationMatrix:
             self.mode = np.shape(array)[3]
             self.input_matrix = np.zeros((size_z, size_y, size_x), dtype=bool)
             self.segmentation_objects = []
+            self.filter_size = filter_size
 
             for i in range(0, size_z):
                 for j in range(0, size_y):
@@ -158,11 +155,11 @@ class SegmentationMatrix:
                 print()
             print()
 
-    # get_first_element_in_lookup_matrix() acts as a isEmpty() which also returns the first coordination if found
+    # get_first_element_in_lookup_matrix() acts as a isEmpty() which also returns the first coordinate if any
     def get_first_element_in_lookup_matrix_and_is_empty(self, x, y, z):
         # Range covers the rest of the line starting from lookup_node
+        x += 1
         while x < self.size_x:
-            self.look_up_count += 1
             if self.input_matrix[z][y][x]:
                 return False, [x, y, z]
             x += 1
@@ -170,7 +167,6 @@ class SegmentationMatrix:
         # Range covers the bottom of the section starting at the line after lookup_node
         for i in range(y + 1, self.size_y):
             for j in range(0, self.size_x):
-                self.look_up_count += 1
                 if self.input_matrix[z][i][j]:
                     return False, [j, i, z]
 
@@ -178,7 +174,6 @@ class SegmentationMatrix:
         for i in range(z + 1, self.size_z):
             for j in range(0, self.size_y):
                 for k in range(0, self.size_x):
-                    self.look_up_count += 1
                     if self.input_matrix[i][j][k]:
                         return False, [k, j, i]
 
@@ -194,13 +189,16 @@ class SegmentationMatrix:
             lookup_z = node[2] + neighbor[2]
             if 0 <= lookup_x < self.size_x and 0 <= lookup_y < self.size_y and 0 <= lookup_z < self.size_z:
                 if self.input_matrix[lookup_z][lookup_y][lookup_x]:
-                    neighbors.append([lookup_x, lookup_y, lookup_z])
                     self.input_matrix[lookup_z][lookup_y][lookup_x] = False
+                    neighbors.append([lookup_x, lookup_y, lookup_z])
 
         return neighbors
 
     def find_proximity(self, adjacency):
-        is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(0, 0, 0)
+        is_lookup_matrix_empty = False
+        node = [0, 0, 0]
+        if not self.input_matrix[0][0][0]:
+            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(0, 0, 0)
 
         while not is_lookup_matrix_empty:
             segmentation_object = SegmentationObject()
@@ -220,7 +218,8 @@ class SegmentationMatrix:
                 segmentation_object.add(neighbor[0], neighbor[1], neighbor[2])
 
             self.segmentation_objects.append(segmentation_object)
-            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(node[0], node[1], node[2])
+            is_lookup_matrix_empty, node = self.get_first_element_in_lookup_matrix_and_is_empty(node[0], node[1],
+                                                                                                node[2])
 
     def find_independent_objects_from_adjacency(self, mode):
         self.find_proximity(get_adjacency_for_selection(mode))
@@ -248,22 +247,24 @@ class SegmentationMatrix:
             print()
 
     def write_to_json(self):
-        file_name = "Segmentation_" + datetime.now().strftime("%Y-%m-%d at %H.%M.%S") + ".json"
+        file_name = self.file_name.rsplit(".", 1)[0] + "_seg_" + \
+                    datetime.now().strftime("%Y-%m-%d at %H.%M.%S") + ".json"
 
         json_data = {
-            "file_name": "Brats18_2013_2_1_flair.nii",
+            "file_name": self.file_name,
             "version": 0,
             "size_x": self.size_x,
             "size_y": self.size_y,
             "size_z": self.size_z,
+            "initial_count": self.segmentation_objects.__len__(),
+            "filter_size": self.filter_size,
             "object_count": 0,
-            "filter_size": MIN_SIZE,
             "data": []
         }
 
         index = 0
         for segmentation_object in self.segmentation_objects:
-            if segmentation_object.size() >= MIN_SIZE:  # Filters out objects that are smaller than MIN_SIZE pixels
+            if segmentation_object.size() >= self.filter_size:  # Filters out objects that are smaller than n pixels
                 index += 1
                 json_data['data'].append({
                     "name": "Segmentation Object " + str(index),
