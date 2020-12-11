@@ -168,7 +168,7 @@ class SegmentationMatrix:
             x += 1
 
         # Range covers the bottom of the section starting at the line after lookup_node
-        for i in range(y, self.size_y):
+        for i in range(y + 1, self.size_y):
             for j in range(0, self.size_x):
                 self.look_up_count += 1
                 if self.input_matrix[z][i][j]:

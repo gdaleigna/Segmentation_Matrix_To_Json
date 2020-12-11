@@ -35,7 +35,9 @@ seg.write_to_json()
 # TIMER
 print("--- %s seconds ---" % (time.time() - start_time))
 
+# TODO: Check to see why the total lookups won't match the resolution
 print("Image resolution", seg.size_x * seg.size_y * seg.size_z)
 print("Total lookups:", seg.look_up_count)
 print("Ratio:", seg.look_up_count / (seg.size_x * seg.size_y * seg.size_z))
+print("Extra lookups:", seg.look_up_count - (seg.size_x * seg.size_y * seg.size_z))
 
