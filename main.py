@@ -1,8 +1,8 @@
-import random
 from segmentation import *
 
 # MAIN
-# CREATING RANDOM SEGMENTATION ARRAY
+# CREATING RANDOM SEGMENTATION ARRAY (NOT NEEDED)
+import random
 x = 256
 y = 256
 z = 10
