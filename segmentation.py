@@ -1,7 +1,9 @@
 import numpy as np
 import json
+import os
 import time
 from datetime import datetime
+from pathlib import Path
 
 
 # ADJACENCY DEFINITIONS
@@ -52,6 +54,17 @@ def get_adjacency_for_selection(selection):
                  1: diagonal_adjacency
                  }
     return adjacency[selection]()
+
+
+def write_json(target_path, target_file, data):
+    if not os.path.exists(target_path):
+        try:
+            os.makedirs(target_path)
+        except Exception as e:
+            print(e)
+            raise
+    with open(os.path.join(target_path, target_file), 'w') as f:
+        json.dump(data, f, indent=4)
 
 
 # CLASS
@@ -251,7 +264,7 @@ class SegmentationMatrix:
                 print()
             print()
 
-    def write_to_json(self, directory):
+    def write_json_to_directory(self, directory):
         start_time = time.time()
         file_name = self.file_name.rsplit(".", 1)[0] + "_seg_" + datetime.now().strftime("%Y-%m-%d_at_%H.%M.%S") \
                     + ".json"
@@ -283,11 +296,10 @@ class SegmentationMatrix:
 
         json_data["object_count"] = index
 
-        json_object = json.dumps(json_data, indent=4)
-        with open(file_name, "w") as outfile:
-            outfile.write(json_object)
+        write_json(directory, file_name, json_data)
 
-        # TODO: Change this line to include the needed information on the server shell if necessary
-        print("SUCCESS: Export completed in %ss" % str(round(self.completion_time + time.time() - start_time, 4)),
-              "with", self.segmentation_objects.__len__(), "object(s) for", self.file_name,
-              'saved as "' + file_name + '" to directory: "' + directory + '".')
+        # TODO: Change this line to include the needed information on the  terminal if necessary
+        print("SUCCESS:", self.file_name,
+              "exported in %ss" % str(round(self.completion_time + time.time() - start_time, 2)),
+              "with", index, "of", self.segmentation_objects.__len__(),
+              'object(s) to "' + directory + "/" + file_name + '".')
