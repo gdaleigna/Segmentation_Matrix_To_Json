@@ -145,6 +145,7 @@ class SegmentationMatrix:
             self.segmentation_objects = []
             self.filter_size = filter_size
 
+            # TODO: Copying the  4d-array into a new one takes longer than a reference to the initial in 3d.
             for i in range(0, size_z):
                 for j in range(0, size_y):
                     for k in range(0, size_x):
