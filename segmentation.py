@@ -70,16 +70,16 @@ def read_segmentation_json(filename):
     with open(filename) as json_file:
         json_data = json.load(json_file)
 
-        input_matrix = np.zeros((json_data['size_z'], json_data['size_y'], json_data['size_x']), dtype=bool)
+        input_matrix = np.zeros((json_data['size_z'], json_data['size_y'], json_data['size_x']), dtype=int)
 
         for independent_object in json_data['data']:
             if independent_object['active'] and not independent_object['hidden']:
-                print(independent_object['name'])
                 for section in independent_object['coordinates'].keys():
                     for line in independent_object['coordinates'][section].keys():
-                        print(section, ":", line, ":", independent_object['coordinates'][section][line])
+                        for x in independent_object['coordinates'][section][line].split(', '):
+                            input_matrix[int(section)][int(line)][int(x)] = 1
 
-# TODO: read all coordinates and add them to the input matrix
+        return input_matrix
 
 
 # CLASS
