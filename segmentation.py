@@ -66,6 +66,19 @@ def write_json(target_path, target_file, data):
         json.dump(data, f, indent=4)
 
 
+def read_segmentation_json(filename):
+    with open(filename) as json_file:
+        json_data = json.load(json_file)
+
+        input_matrix = np.zeros((json_data['size_z'], json_data['size_y'], json_data['size_x']), dtype=bool)
+
+        for independent_object in json_data['data']:
+            if independent_object['active'] and not independent_object['hidden']:
+                print(independent_object['coordinates'])
+
+# TODO: read all coordinates and add them to the input matrix
+
+
 # CLASS
 class SegmentationCoordinate:
     x: int
