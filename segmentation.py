@@ -74,7 +74,10 @@ def read_segmentation_json(filename):
 
         for independent_object in json_data['data']:
             if independent_object['active'] and not independent_object['hidden']:
-                print(independent_object['coordinates'])
+                print(independent_object['name'])
+                for section in independent_object['coordinates'].keys():
+                    for line in independent_object['coordinates'][section].keys():
+                        print(section, ":", line, ":", independent_object['coordinates'][section][line])
 
 # TODO: read all coordinates and add them to the input matrix
 
