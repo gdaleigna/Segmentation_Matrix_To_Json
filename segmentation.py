@@ -67,18 +67,20 @@ def write_json(target_path, target_file, data):
 
 
 def read_segmentation_json(filename):
+    start_time = time.time()
     with open(filename) as json_file:
         json_data = json.load(json_file)
 
-        input_matrix = np.zeros((json_data['size_z'], json_data['size_y'], json_data['size_x']), dtype=int)
+        input_matrix = np.zeros((json_data['size_z'], json_data['size_y'], json_data['size_x'], 2), dtype=int)
 
         for independent_object in json_data['data']:
             if independent_object['active'] and not independent_object['hidden']:
-                for section in independent_object['coordinates'].keys():
-                    for line in independent_object['coordinates'][section].keys():
-                        for x in independent_object['coordinates'][section][line].split(', '):
-                            input_matrix[int(section)][int(line)][int(x)] = 1
+                for z in independent_object['coordinates'].keys():
+                    for y in independent_object['coordinates'][z].keys():
+                        for x in independent_object['coordinates'][z][y].split(', '):
+                            input_matrix[int(z)][int(y)][int(x)][0] = 1
 
+        print('SUCCESS: Read "' + filename + '" in', str(round(time.time() - start_time, 4)), "seconds.")
         return input_matrix
 
 
@@ -316,6 +318,6 @@ class SegmentationMatrix:
 
         # TODO: Change this line to include the needed information on the  terminal if necessary
         print("SUCCESS:", self.file_name,
-              "exported in %ss" % str(round(self.completion_time + time.time() - start_time, 2)),
+              "exported in %ss" % str(round(self.completion_time + time.time() - start_time, 4)),
               "with", index, "of", self.segmentation_objects.__len__(),
               'object(s) to "' + directory + "/" + file_name + '".')
